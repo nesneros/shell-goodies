@@ -1,0 +1,450 @@
+#!/bin/sh -
+
+# z -- safely (un)tar and (de)feather files and directories
+# Steve Kinzler, kinzler@cs.indiana.edu, May 89/Jun 93/Aug 99/Dec 00
+# see website http://www.cs.indiana.edu/~kinzler/z/
+# http://www.cs.indiana.edu/~kinzler/home.html#unix
+
+#   Copyright
+#
+#       Copyright (C) 1989 Stephen B Kinzler <kinzler@cs.indiana.edu>
+#
+#   License
+#
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 2 of the License, or
+#       (at your option) any later version.
+#
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#       GNU General Public License for more details.
+#
+#       You should have received a copy of the GNU General Public License
+#       along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+#version=2.1.15
+#version=2.2.0	# ?? Aug 99: added .zip & zip/unzip support
+#version=2.3.0	# 04 Dec 00: added .bz2 & bzip2 support
+#version=2.4.0	# 23 Sep 02: added -l/-L options
+#version=2.5.0	# 17 Feb 09: added .jar support
+#version=2.6.0	#  5 Nov 09: added lzip support
+		#	     by Antonio Diaz Diaz <ant_diaz@teleline.es>
+#version=2.6.1	#  4 Dec 09: added -q option, copyright/GPL for debian pkg
+#version=2.6.2	# 24 Dec 09: avoid `gzip -S` some for BusyBox gzip
+#version=2.7.0	#  2 Dec 13: added xz support
+		#	     by Franklin Siler <me@franksiler.com>
+version=2.7.1	# 26 Nov 14: update FSF address
+
+GZIP=; ZIPOPT=; UNZIP=; export GZIP ZIPOPT UNZIP
+
+table=
+verbose=; quiet=-q
+report=
+command=compress
+tag=Z
+qopts=
+suffix=.tar.Z
+mode=go-rwx
+preserve=p
+bad=
+
+dfltopts="-T -V -L -Z -s $suffix -m $mode -p"
+
+set x $ZOPTS ${1+"$@"}; shift
+
+while :
+do
+	case $# in
+	0)	break;;
+	*)	case "$1" in
+		-t)	table=t;;
+		-T)	table=;;
+		-v)	verbose=-v; quiet=;;
+		-V|-q)	verbose=;   quiet=-q;;
+		-l)	report=t;;
+		-L)	report=;;
+		-gz)	command=gzip;	  tag=gz;;
+		-z)	command=gzip;	  tag=z;;
+		-I)	command=bzip2;	  tag=bz2;;
+		-lz)	command=lzip;	  tag=lz;;
+		-xz)	command=xz;	  tag=xz;;
+		-Z)	command=compress; tag=Z;;
+		-zip)	command=zip;	  tag=zip;;
+		-jar)	command=zip;	  tag=jar;;
+		-[1-9])	qopts="$qopts $1";;
+		--fast)	qopts="$qopts -1";;
+		--best)	qopts="$qopts -9";;
+		-s)	shift; suffix="$1";;
+		-m)	shift; mode="$1";;
+		-p)	preserve=p;;
+		-P)	preserve=;;
+
+		--)	shift; break;;
+		-h)	bad=t; break;;
+		-*)	bad=t; echo "$0: unknown option ($1)" 1>&2;;
+		*)	break;;
+		esac
+		shift;;
+	esac
+done
+
+case "$#,$bad" in
+0,*|*,?*)	cat << EOF 1>&2
+usage: $0 [ -t | -T ] [ -v | -V ] [ -l | -L ]
+       [ -gz | -z | -I | -lz | -xz | -Z | -zip | -jar ] [ -# ] [ -s suffix ]
+       [ -m mode ] [ -p | -P ] [ -h ] [ -- ] file ...
+where "file" is a file, a directory, a feathered file ending
+in .{Z,gz,z,bz2,lz,xz}, or a tarred and feathered file ending in
+.{tar.,tar,ta,t}{Z,gz,z,bz2,lz,xz} or .{zip,jar}.
+	-t	only list table of contents of given files
+	-T	(un)tar and (de)feather given files
+	-v	verbose output, eg report compression ratios when feathering
+	-V,-q	non-verbose output
+	-l	list the resulting files and directories
+	-L	don't list the resulting files and directories
+	-gz	use gzip and a .gz suffix when feathering
+	-z	use gzip and a .z suffix when feathering
+	-I	use bzip2 and a .bz2 suffix when feathering
+	-lz	use lzip and a .lz suffix when feathering
+	-xz	use xz and a .xz suffix when feathering
+	-Z	use compress and a .Z suffix when feathering
+	-zip	use zip and a .zip suffix when feathering
+	-jar	use zip and a .jar suffix when feathering
+	-#	where # is 1 thru 9 is passed to *zip*, also --fast or --best
+	-s	create tar and feather files with the given suffix style
+	-m	apply the given chmod argument to created tar and feather files
+	-p	preserve modes when untarring
+	-P	don't preserve modes when untarring
+	-h	just print this help message
+	--	remaining arguments are to be taken as files
+Defaults are "$dfltopts"
+and as overridden by ZOPTS, currently "$ZOPTS".
+Version $version
+EOF
+		exit 1;;
+esac
+
+###############################################################################
+
+iwd=`pwd` || exit 2
+
+tmp=/tmp/z$$
+trap 'rm -f $tmp; exit 4' 1 2 13 15
+
+for arg
+do
+	cd "$iwd" || exit 3
+
+	case "$arg" in
+	*/)	arg=`echo "$arg" | sed 's,/*$,,'`;;
+	esac
+
+	case "$arg" in
+	*/*)	cd  `echo "$arg" | sed 's,[^/]*$,,'` || continue
+		arg=`echo "$arg" | sed 's,.*/,,'`;;
+	esac
+
+	case "$arg" in
+
+###############################################################################
+# defeather and untar feathered tar files
+###############################################################################
+
+	*.tar.[Zz]|*.tar[Zz]|*.ta[Zz]|*.t[Zz]|*.tar.gz|*.targz|*.tagz|*.tgz|*.tar.bz2|*.tarbz2|*.tabz2|*.tbz2|*.tar.lz|*.tlz|*.tar.xz|*.txz|*.zip|*.jar)
+		case "$arg" in
+		*Z)		ucommand=uncompress;   utag=Z;;
+		*zip|*jar)	ucommand=unzip;        utag=;;
+		*bz2)		ucommand='bzip2 -d';   utag=bz2;;
+		*lz)		ucommand='lzip -d';    utag=lz;;
+		*xz)		ucommand='xz -d';      utag=xz;;
+		*)		ucommand='gzip -d -n'; utag=z;;
+		esac
+
+		case "$table" in
+		?*)	echo "$arg:"
+			case "$ucommand" in
+			unzip*)	$ucommand -l $verbose "$arg";;
+			*)	$ucommand < "$arg" | tar -tvf -;;
+			esac
+			continue;;
+		esac
+
+		case "$arg" in
+		*.zip|*.jar)
+			tarf="$arg"
+			dirf=`echo "$tarf" | sed 's/\.[^\.]*$//'`;;
+		*.tar.[Zz]|*.tar.gz|*.tar.bz2|*.tar.lz|*.tar.xz)
+			tarf=`echo "$arg"  | sed 's/\.[^\.]*$//'`
+			dirf=`echo "$tarf" | sed 's/.tar$//'`;;
+		*)
+			dirf=`echo "$arg"  | sed 's/\.[^\.]*$//'`
+			tarf="$dirf".tar;;
+		esac
+
+		if test "$tarf" != "$arg" -a \( -f "$tarf" -o -d "$tarf" \)
+		then
+			echo "$0: $tarf already exists" 1>&2
+			continue
+		elif test -f "$dirf" -o -d "$dirf"
+		then
+			echo "$0: $dirf already exists" 1>&2
+			continue
+		fi
+
+		case "$arg" in
+		*.tar.[Zz]|*.tar.gz|*.tar.bz2|*.tar.lz|*.tar.xz|*.zip|*.jar)
+			;;
+		*)
+			if test -f "$tarf".$utag -o -d "$tarf".$utag
+			then
+				echo "$0: $tarf.$utag already exists" 1>&2
+				continue
+			fi
+			mv "$arg" "$tarf".$utag || continue
+			arg="$tarf".$utag;;
+		esac
+
+		case "$arg" in
+		*.zip|*.jar)
+			mkdir "$dirf" || continue
+			cd "$dirf"    || continue
+			$ucommand -q ../"$arg" 2>&1 | tee $tmp 1>&2;;
+
+		*)
+			$ucommand "$arg"
+			if test -f "$arg" -o ! -s "$tarf"
+			then
+				echo "$0: cannot defeather $arg" 1>&2
+				continue
+			fi
+
+			mkdir "$dirf" || continue
+			cd "$dirf"    || continue
+			tar -x${preserve}f ../"$tarf" 2>&1 | tee $tmp 1>&2;;
+		esac
+
+		if test ! -s $tmp
+		then
+			ls -a | sed '/^\.$/d; /^\.\.$/d' > $tmp
+			nfiles=`wc -l < $tmp`
+
+			case "`echo $nfiles`" in
+			0)	cat << EOF 1>&2
+$0: warning: keeping empty tar file $tarf; untarred as directory $dirf
+EOF
+				;;
+
+			1)	rm ../"$tarf"
+				case "`cat $tmp`" in
+				"$dirf")	cd ..			     &&
+						mv "$dirf" "$dirf".Z$$	     &&
+						    mv "$dirf".Z$$/"$dirf" . &&
+						    rmdir "$dirf".Z$$;;
+				*)		cat << EOF 1>&2
+$0: untarred $tarf in directory $dirf
+EOF
+						;;
+				esac;;
+
+			*)	rm ../"$tarf"
+				cat << EOF 1>&2
+$0: untarred $tarf in directory $dirf
+EOF
+				;;
+			esac
+
+		else
+			cat << EOF 1>&2
+$0: cannot untar $tarf; remnants in directory $dirf
+EOF
+		fi
+
+		case "$report" in
+		?*)	echo "$dirf";;
+		esac
+
+		rm -f $tmp;;
+
+###############################################################################
+# defeather plain feathered files
+###############################################################################
+
+	*.[Zz]|*.gz|*.bz2|*.lz|*.xz)
+		case "$table" in
+		?*)	echo "$arg:"; continue;;
+		esac
+
+		case "$arg" in
+		*Z)	ucommand=uncompress;;
+		*bz2)	ucommand='bzip2 -d';;
+		*lz)	ucommand='lzip -d';;
+		*xz)	ucommand='xz -d';;
+		*)	ucommand='gzip -d -n';;
+		esac
+
+		file=`echo "$arg" | sed 's/\.[^\.]*$//'`
+		if test -f "$file" -o -d "$file"
+		then
+			echo "$0: $file already exists" 1>&2
+		else
+			case "$file" in
+			-)	$ucommand;;
+			*)	$ucommand "$arg";;
+			esac
+			case "$report" in
+			?*)	echo "$file";;
+			esac
+		fi;;
+
+###############################################################################
+
+	*)
+		case "$command" in
+		compress)	cargs="$verbose -f";;
+		gzip)		case "$tag" in
+				gz)	cargs="$verbose $qopts";;
+				*)	cargs="$verbose -S .$tag $qopts";;
+				esac;;
+		bzip2|lzip|xz)	cargs="$verbose $qopts";;
+		zip)		cargs="$quiet -r -y -m -T $qopts";;
+		*)		cat << EOF 1>&2
+$0: unsupported feather command ($command), skipping $arg
+EOF
+				continue;;
+		esac
+
+###############################################################################
+# tar and feather directories
+###############################################################################
+
+		if test -d "$arg"
+		then
+			case "$table" in
+			?*)	echo "$arg:"
+				ls -al "$arg"
+				continue;;
+			esac
+
+			case "$suffix" in
+			.tar.[Zz]|.tar.gz|tar.[Zz]|tar.gz)  suffix=.tar.$tag;;
+			.tar.bz2|tar.bz2)		    suffix=.tar.$tag;;
+			.tar.lz|tar.lz)			    suffix=.tar.$tag;;
+			.tar.xz|tar.xz)			    suffix=.tar.$tag;;
+			.tar[Zz]|.targz|tar[Zz]|targz)	    suffix=.tar$tag;;
+			.tarbz2|tarbz2)			    suffix=.tar$tag;;
+			.ta[Zz]|.tagz|ta[Zz]|tagz)	    suffix=.ta$tag;;
+			.tabz2|tabz2)			    suffix=.ta$tag;;
+			.t[Zz]|.tgz|t[Zz]|tgz)		    suffix=.t$tag;;
+			.zip|zip|.jar|jar|.tbz2|tbz2)	    suffix=.t$tag;;
+			.tlz|tlz)			    suffix=.t$tag;;
+			.txz|txz)			    suffix=.t$tag;;
+			*)				    cat << EOF 1>&2
+$0: invalid tar and feather suffix ($suffix), skipping $arg
+EOF
+							    continue;;
+			esac
+			case "$command" in
+			zip)	suffix=.$tag;;
+			esac
+
+			if test $command != zip -a \
+				\( -f "$arg".tar -o -d "$arg".tar \)
+			then
+				echo "$0: $arg.tar already exists" 1>&2
+				continue
+			elif test $command != zip -a \
+				 \( -f "$arg".tar.$tag -o -d "$arg".tar.$tag \)
+			then
+				echo "$0: $arg.tar.$tag already exists" 1>&2
+				continue
+			elif test -f "$arg"$suffix -o -d "$arg"$suffix
+			then
+				echo "$0: $arg$suffix already exists" 1>&2
+				continue
+			fi
+
+			dmode=`ls -dl "$arg" | sed '
+				s/^d\([^ ]*\).*/\1/
+				s/rw./6/g; s/r-./4/g; s/-w./2/g; s/--./0/g'`
+			case "$dmode" in
+			[0246][0246][0246])	;;
+			*)			cat << EOF 1>&2
+$0: cannot determine directory modes ($arg), using 600
+EOF
+						dmode=600;;
+			esac
+
+			case "$command" in
+			zip)	$command $cargs "$arg"$suffix "$arg"
+				chmod $dmode "$arg"$suffix
+
+				case "$mode" in
+				-)	;;
+				?*)	chmod "$mode" "$arg"$suffix;;
+				esac
+
+				case "$report" in
+				?*)	echo "$arg"$suffix;;
+				esac
+				continue;;
+			esac
+
+			> "$arg".tar		|| continue
+			chmod $dmode "$arg".tar ||
+				{ rm -f "arg".tar; continue; }
+
+			case "$mode" in
+			-)	;;
+			?*)	chmod "$mode" "$arg".tar ||
+					{ rm -f "$arg".tar; continue; };;
+			esac
+
+			tar -cf "$arg".tar "$arg" 2>&1 | tee $tmp 1>&2
+
+			if test ! -s $tmp -a -s "$arg".tar
+			then
+				rm -r "$arg" &
+				$command $cargs "$arg".tar
+				case "$arg".tar.$tag in
+				"$arg"$suffix)	;;
+				*)	test -f "$arg".tar.$tag &&
+					    mv "$arg".tar.$tag "$arg"$suffix;;
+				esac
+				case "$report" in
+				?*)	echo "$arg"$suffix;;
+				esac
+				wait
+			else
+				rm -f "$arg".tar
+				echo "$0: $arg$suffix not created" 1>&2
+			fi
+
+			rm -f $tmp
+
+###############################################################################
+# feather plain files
+###############################################################################
+
+		else
+			case "$table" in
+			?*)	echo "$arg:"; continue;;
+			esac
+
+			if test -f "$arg".$tag -o -d "$arg".$tag
+			then
+				echo "$0: $arg.$tag already exists" 1>&2
+			else
+				case "$command" in
+				zip)	$command $cargs "$arg".$tag "$arg";;
+				*)	$command $cargs "$arg";;
+				esac
+				case "$report" in
+				?*)	echo "$arg".$tag;;
+				esac
+			fi
+
+		fi;;
+	esac
+done

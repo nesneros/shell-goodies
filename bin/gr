@@ -1,0 +1,38 @@
+#! /bin/sh
+#
+# This is a helper script to call gradlew. It searches from the current directory
+# up the file hierarchy until it finds gradlew, and then executes it.
+# It also looks for a build.gradle file and execute with that as the current directory.
+#
+# It makes it a bit simpler to execute gradlew when you are not located in the root of the project
+#
+# To use it simply copy it to somewhere on your path.
+# If you want to run gradle with remote debug enabled use -d as the first argument
+#
+
+
+d=$(pwd)
+
+debugflag=''
+if [ "$1" = "-d" ] ; then
+  debugflag="-Dorg.gradle.debug=true --no-daemon"
+  shift
+fi
+
+while true ; do
+    if [ -z "$buildDir" ] && [ -f "$d/build.gradle" ] ; then
+        buildDir=$d
+    fi
+    if [ "$d" = "/" ] ; then
+      	echo "Error: gradlew not found"
+	exit 1
+    fi
+    [ -f "$d/gradlew" ] && break
+    d=$(dirname $d)
+done
+
+
+[ -z "$buildDir" ] || cd $buildDir
+echo "Build dir: $(pwd)"
+exec "$d/gradlew" $debugflag "$@"
+

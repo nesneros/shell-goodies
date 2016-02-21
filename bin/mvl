@@ -1,0 +1,25 @@
+#! /bin/sh
+
+# Move a file and create symbolic link to it from its old location
+
+PN=$(basename "$0")
+
+usage() {
+  echo >&2 "$PN - move a file and create a symbolic link from its old location
+usage: $PN file [destination]"
+
+  exit 1
+}
+
+[ $# -eq 1 ] && exec $0 "$1" .
+[ $# -ne 2 ] && usage;
+
+SRC="$1"
+BASESRC=$(basename "$SRC")
+DEST="$2"
+
+test -d "$DEST" && DEST="$DEST/$BASESRC"
+DEST=$(expand_path "$DEST")
+
+mv "$SRC" "$DEST"  
+ln -s "$DEST" "$SRC"
