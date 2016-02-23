@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/bash -e
 
 while [[ "$1" = -* ]] ; do
     case "$1" in
@@ -17,7 +17,8 @@ while [[ "$1" = -* ]] ; do
     shift
 done
 
-[[ -z "$cmd" ]] && cmd=$*
+[[ -z "$cmd" ]] && cmd=("$@")
+[[ -z "$cmd" ]] && cmd=(.)
 
 if ! type emacsclient > /dev/null ; then
     emacs "$@"
