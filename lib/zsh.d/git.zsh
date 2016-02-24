@@ -1,4 +1,4 @@
-local expectedTemplateDir=$SHELL_GOODIES_ROOT/git_template
+local expectedTemplateDir=$SHELL_GOODIES_ROOT/lib/git_template
 local configuredTemplateDir=$(git config init.templateDir)
 
 if [[ "$expectedTemplateDir" != "$configuredTemplateDir" ]]; then
