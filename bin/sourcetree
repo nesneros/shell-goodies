@@ -1,0 +1,17 @@
+#! /usr/bin/env zsh -e
+
+if [ -z "$1" ]; then
+    d=${PWD}
+else 
+    d=$1
+fi
+
+# Note .git can be a regular file "pointing" to the .git directory. This
+# is (at least) the case for subrepos
+while ! [[ -f "$d/.git" || -d "$d/.git" || -d "$d/.hg" ]]; do
+    d=${$d:h}
+    [ "$d" = "/" ] && echo "Error: .git or .hg not found" && exit 1
+done
+
+# Assume OSX
+exec open -a SourceTree $d
