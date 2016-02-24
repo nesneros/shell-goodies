@@ -1,21 +1,87 @@
 #! /usr/bin/env zsh -e
 
-mkdir -p $HOME/.goodies
-
-# Set git global template
-
 local dir="${0:h:A}"
+local goodiesDir="$HOME/.goodies"
 
-cat <<EOF
+mkdir -p "$goodiesDir"
+local prog
+local neededProgs=(emacs emacsclient git)
+case "$OSTYPE" in
+    (darwin*)
+        neededProgs=(${neededProgs[@]} brew)
+        ;;
+esac
 
-#######################################################
-#######################################################
-Perform the following manual steps:
-- Ensure '$dir/zshenv.zsh' is sourced by '$HOME/.zshenv'
-- Ensure '$dir/zshrc.zsh' is sourced by '$HOME/.zshrc'
-The latter can be done with:
-  source \${SHELL_GOODIES_ROOT}/zshrc.zsh
-#######################################################
-#######################################################
+for prog in $neededProgs;  do
+    if ! type "$prog" > /dev/null; then
+        echo "ERROR: $prog is not installed"
+        exit 1
+    fi
+done
 
+local force createInitFile symlink
+while [[ "$1" = -* ]]; do
+    case $1 in
+        (--create-init-file) 
+            createInitFile=t
+            ;;
+        (--force)
+            force=t
+            ;;
+        (*)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+createInitFile() {
+    local initFile="$goodiesDir/init"
+    if [[ -f "$initFile" ]] && [[ "$force" != 't' ]]; then
+        initFile="$initFile.template"
+    fi
+    cat >| "$initFile" <<EOF
+# Directory used as default destination for git clone
+#GOODIES_CLONE_DIR=~/my-projects
+#zstyle :shell-goodies:init clone_dir ~/my-projects
+
+# Personal bin folder. The folder is added to path, it defaults to ~/bin
+#GOODIES_PERSONAL_BIN=$HOME/bin
 EOF
+}
+
+doInstall() {
+    git config --global init.templatedir "$dir/git_template"
+    mkdir -p "$goodiesDir/fpath"
+    ln -sf "$(brew --prefix)/Library/Contributions/brew_zsh_completion.zsh" "$goodiesDir/fpath/_brew"
+    local names=(zshrc zshenv zprofile zlogin)
+    local existingFiles
+    
+    for n in $names; do
+        local f="$HOME/.${n}"
+        if [[ -e "$HOME/.${n}" ]]; then
+            echo "File $f exits"
+            exitingFiles=t
+        fi
+    done
+    if [[ "$exitingFiles" = t ]] && [[ "$force" != t ]]; then
+        echo "Use --force to overwrite existing files"
+    else
+        for n in $names; do
+            local f="$HOME/.${n}"
+            ln -sf "$dir/$n.zsh" "$f"
+        done
+    fi
+}
+
+if [[ "$1" = 'doIt' ]]; then
+    doInstall
+else
+    cat <<EOF
+The command will install the Shell Goodies. More precise
+it will symlink zsh startup files from $HOME to Shell Goodies files.
+
+Type '${0} doIt' to perform the installation.
+EOF
+fi
