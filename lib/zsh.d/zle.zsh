@@ -14,15 +14,17 @@ after-first-word() {
     zle emacs-forward-word
     zle forward-char
 }
- after-second-word() {
-     zle beginning-of-line
-     zle emacs-forward-word
-     zle emacs-forward-word
-     zle forward-char
-}
- zle -N after-first-word
- zle -N after-second-word
- bindkey "^X1" after-first-word
- bindkey "^X2" after-second-word
 
- export WORDCHARS='*?_-.[]~&;!#$%^(){}<>/'
+after-second-word() {
+    zle beginning-of-line
+    zle emacs-forward-word
+    zle emacs-forward-word
+    zle forward-char
+}
+
+zle -N after-first-word
+zle -N after-second-word
+bindkey "^X1" after-first-word
+bindkey "^X2" after-second-word
+
+export WORDCHARS='*?_-.[]~&;!#$%^(){}<>/'

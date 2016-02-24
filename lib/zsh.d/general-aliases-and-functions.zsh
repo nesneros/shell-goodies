@@ -17,14 +17,16 @@ compdef md=mkdir
 alias h='history -f 1 | less +G'
 alias top='sudo htop'
 
-if type emacs > /dev/null ; then
-    alias e=e.sh
-    alias egit='e.sh --git'
-    export EDITOR=e.sh
-fi
-export VISUAL=$EDITOR    
+alias -s .gz=z
+alias -s .zip=z
+alias -s .Z=z
 
-alias -s tar.gz=z
+alias openports="lsof -n -P -i4TCP|grep LISTEN"
+
+# Reload the shell (i.e. invoke as a login shell)
+alias reload="exec $SHELL -l"
+
+autoload -U zmv
 
 mcd() {
     mkdir -p "$1" && cd "$1"
@@ -76,5 +78,10 @@ imv() {
         vared dst
         [[ $src != $dst ]] && mkdir -p $dst:h && mv -n $src $dst
     done
+}
+
+# urlencode text
+function urlencode {
+    print "${${(j: :)@}//(#b)(?)/%$[[##16]##${match[1]}]}"
 }
 

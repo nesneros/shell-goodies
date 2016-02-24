@@ -1,6 +1,3 @@
-autoload -Uz compinit
-compinit
-
 function dm-vbox {
     local machineName=$1
     docker-machine create -d virtualbox $machineName
@@ -42,7 +39,7 @@ _dm_complete() {
 
 compdef _dm_complete dm-select
 
-function docker {
+function dkr {
     extraargs=""
     if [ "$1" = '-X' ] ; then
         shift
@@ -95,10 +92,9 @@ function dm-updateEtcHosts {
 }
 
 alias dm=docker-machine
-compdef dm=docker-machine
+compdef dm=docker-machine 2>/dev/null || true
 
-alias dkr=docker
-compdef dkr=docker
+compdef dkr=docker 2>/dev/null || true
 
 function m {
     local cmd=$1
