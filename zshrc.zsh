@@ -1,40 +1,17 @@
-alias -s .gz=z
-alias -s .zip=z
-alias -s .Z=z
+_goodies_log "BEGIN: zshrc.zsh"
 
-alias e=e.sh
-alias egit='e --git'
+fpath=("$HOME/.goodies/fpath" "${fpath[@]}")
 
-alias openports="lsof -n -P -i4TCP|grep LISTEN"
+_prezto_source zshrc
 
 autoload -Uz compinit
 compinit
 
-for f in ${0:h}/lib/zsh.d/*.zsh(N) $HOME/etc/zsh.d/*.zsh(N); do
-    source $f
-done
+for f in ${SHELL_GOODIES_ROOT}/lib/zsh.d/*.zsh(N) $HOME/etc/zsh.d/*.zsh(N); do
+    _source $f
+done 
 
-_imux_complete() {
-    local completions array
-    completions=$(ls $HOME/.tmuxinator/|grep -e '.yml$'| cut -f1 -d'.')
-    array=( "${(ps:\n:)completions}" )
-    compadd $array
-}
+typeset -U path
+typeset -U manpath
 
-compdef _imux_complete imux
-
-source $UNUXUS_HOME/etc/profile/common
-
-if type fasd > /dev/null 2>&1 ; then
-    function fasd_type {
-        # Echo output of 'type' command, and add the first line that reference a file to fasd
-        \type -a "$@" > /dev/stdout > >(grep -m 1 "^$1 is /"| (read x ; fasd -A ${x#$1 is }))
-    }
-    alias type=fasd_type
-fi
-
-# urlencode text
-function urlencode {
-    print "${${(j: :)@}//(#b)(?)/%$[[##16]##${match[1]}]}"
-}
-
+_goodies_log "END: zshrc.zsh"
