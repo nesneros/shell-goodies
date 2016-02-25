@@ -7,9 +7,15 @@ _prezto_source zshrc
 autoload -Uz compinit
 compinit
 
-for f in ${SHELL_GOODIES_ROOT}/lib/zsh.d/*.zsh(N) $HOME/etc/zsh.d/*.zsh(N); do
+goodiesInitFile=$HOME/.goodies/init
+[[ -f $goodiesInitFile ]] && _source "$goodiesInitFile"
+unset goodiesInitFile
+
+zstyle -s ':shell-goodies:init' dir d
+for f in ${SHELL_GOODIES_ROOT}/lib/zsh.d/*.zsh(N) ${d:-/somethingThatDoesNotExist}/*.zsh(N); do
     _source $f
 done 
+unset d
 
 typeset -U path
 typeset -U manpath

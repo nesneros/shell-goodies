@@ -43,9 +43,6 @@ fi
 
 _prezto_source zshenv
 
-goodiesInitFile=$HOME/.goodies/init
-[[ -f $goodiesInitFile ]] && source "$goodiesInitFile"
-
 typeset -U path
 #typeset -U manpath
 
