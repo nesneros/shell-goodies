@@ -10,6 +10,10 @@ efile() {
     echo ${d:Q}
 }
 
+edir() {
+    echo "${$(efile):h}"
+}
+
 cde() {
-    cd "${$(efile):h}"
+    cd "$(edir)"
 }
