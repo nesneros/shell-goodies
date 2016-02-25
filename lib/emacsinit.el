@@ -117,9 +117,7 @@ point reaches the beginning or end of the buffer, stop there."
   (if (package-installed-p (eval package))
       (while body
         (eval (pop body)))
-    (message "*** Package '%s' is not installed" (eval package))
-    )
-  )
+    (message "*** Package '%s' is not installed" (eval package))))
 
 ;;; Packages installed by the package management should not be used before the package management is initialized
 
@@ -129,8 +127,15 @@ point reaches the beginning or end of the buffer, stop there."
              ;; (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
              (global-set-key (kbd "C-c ai") 'aggressive-indent-mode))
 
+;;; Dash
+(eval-after-load "dash" '(dash-enable-font-lock))
+
 ;;; Flycheck
 (for-package 'flycheck
+             (add-hook 'flycheck-error-list-after-refresh-hook
+                       '(lambda () (-when-let (window (flycheck-get-error-list-window t))
+                                     (with-selected-window window
+                                       (fit-window-to-buffer window 30)))))
              (add-hook 'after-init-hook #'global-flycheck-mode))
 
 ;;; git-gutter+
