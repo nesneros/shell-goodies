@@ -53,7 +53,7 @@ _link() {
 }
 
 doInstall() {
-    git config --global init.templatedir "$dir/git_template"
+    git config --global init.templatedir "$dir/lib/git_template"
     mkdir -p "$goodiesDir/fpath"
     ln -sf "$(brew --prefix)/Library/Contributions/brew_zsh_completion.zsh" "$goodiesDir/fpath/_brew"
     local -A files
