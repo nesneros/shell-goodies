@@ -21,6 +21,8 @@ _prezto_source() {
     [[ -e "$preztoFile" ]] && _source "$preztoFile"
 }
 
+[[ -f "$HOME/.goodies/envinit" ]] && _source "$HOME/.goodies/envinit"
+
 export SHELL_GOODIES_ROOT=${${(%):-%N}:A:h} # $0 doesn't work because it is a starup file for zsh
 _goodies_log "SHELL_GOODIES_ROOT=$SHELL_GOODIES_ROOT"
 
