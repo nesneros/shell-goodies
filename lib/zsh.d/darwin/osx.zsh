@@ -34,3 +34,6 @@ battery() {
 	    fi
 	done
 }
+
+# Go to sleep
+alias afk='osascript -e ''tell app "System Events" to sleep'''
