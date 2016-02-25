@@ -41,14 +41,7 @@ createInitFile() {
     if [[ -f "$initFile" ]] && [[ "$force" != 't' ]]; then
         initFile="$initFile.template"
     fi
-    cat >| "$initFile" <<EOF
-# Directory used as default destination for git clone
-#GOODIES_CLONE_DIR=~/my-projects
-#zstyle :shell-goodies:init clone_dir ~/my-projects
-
-# Personal bin folder. The folder is added to path, it defaults to ~/bin
-#GOODIES_PERSONAL_BIN=$HOME/bin
-EOF
+    cp "$dir/lib/init.template" "$initFile"
 }
 
 doInstall() {

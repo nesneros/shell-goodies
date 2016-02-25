@@ -1,0 +1,5 @@
+# Directory used as default destination for git clone
+#zstyle ':shell-goodies:dvcs:*' clonedir ~/my-projects
+
+# Directory processed by .zshrc. Files should have extension .zsh
+#zstyle ':shell-goodies:init' dir ~/etc/zsh.d
