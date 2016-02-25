@@ -11,11 +11,18 @@ goodiesInitFile=$HOME/.goodies/init
 [[ -f $goodiesInitFile ]] && _source "$goodiesInitFile"
 unset goodiesInitFile
 
+osTag=unknown
+case $OSTYPE in
+    (darwin*)
+        osTag=darwin
+        ;;
+esac
+
 zstyle -s ':shell-goodies:init' dir d
-for f in ${SHELL_GOODIES_ROOT}/lib/zsh.d/*.zsh(N) ${d:-/somethingThatDoesNotExist}/*.zsh(N); do
+for f in ${SHELL_GOODIES_ROOT}/lib/zsh.d/{,$osTag/}*.zsh(N) ${d:-/somethingThatDoesNotExist}/*.zsh(N); do
     _source $f
 done 
-unset d
+unset d osTag
 
 typeset -U path
 typeset -U manpath
