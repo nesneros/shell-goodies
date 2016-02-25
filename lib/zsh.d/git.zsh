@@ -12,15 +12,14 @@ if [[ "$expectedTemplateDir" != "$configuredTemplateDir" ]]; then
     echo "Consider executing:"
     echo "   git config --global init.templatedir $SHELL_GOODIES_ROOT/git_template"
 fi
-
-# Clone a git url into $GOODIES_CLONE_DIR
-if [[ -n "$GOODIES_CLONE_DIR" ]]; then
+if zstyle -m ':shell-goodies:dvcs:git' clonedir '*'; then
     function _git_clone {
-        local url=$1
-        cd "$GOODIES_CLONE_DIR"
+        local url="$1"
+        local clonedir
+        zstyle -s ':shell-goodies:dvcs:git' clonedir clonedir
+        cd "$clonedir"
         git clone $url
-        local dir=${url:t:r}
-        cd $dir
+        cd ${url:t:r}
     }
     alias -s git=_git_clone
 fi
