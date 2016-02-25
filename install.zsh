@@ -2,8 +2,11 @@
 
 local dir="${0:h:A}"
 local goodiesDir="$HOME/.goodies"
+local emacsDir="$HOME/.emacs.d"
 
 mkdir -p "$goodiesDir"
+mkdir -p "$emacsDir"
+
 local prog
 local neededProgs=(emacs emacsclient git)
 case "$OSTYPE" in
@@ -44,16 +47,23 @@ createInitFile() {
     cp "$dir/lib/init.template" "$initFile"
 }
 
+_link() {
+    echo "Linking '$1' to '$2'"
+    ln -sf "$1" "$2"
+}
+
 doInstall() {
     git config --global init.templatedir "$dir/git_template"
     mkdir -p "$goodiesDir/fpath"
     ln -sf "$(brew --prefix)/Library/Contributions/brew_zsh_completion.zsh" "$goodiesDir/fpath/_brew"
-    local names=(zshrc zshenv zprofile zlogin)
-    local existingFiles
+    local -A files
+    for n in zshrc zshenv zprofile zlogin; do
+        files[${HOME}/.${n}]="$dir/${n}.zsh"
+    done
+    files[$emacsDir/init.el]="$dir/lib/emacsinit.el"
     
-    for n in $names; do
-        local f="$HOME/.${n}"
-        if [[ -e "$HOME/.${n}" ]]; then
+    for f in ${(k)files[@]}; do
+        if [[ -e "$f" ]]; then
             echo "File $f exits"
             exitingFiles=t
         fi
@@ -61,9 +71,8 @@ doInstall() {
     if [[ "$exitingFiles" = t ]] && [[ "$force" != t ]]; then
         echo "Use --force to overwrite existing files"
     else
-        for n in $names; do
-            local f="$HOME/.${n}"
-            ln -sf "$dir/$n.zsh" "$f"
+        for f in ${(k)files[@]}; do
+            _link "$files[$f]" "$f"
         done
     fi
 }
