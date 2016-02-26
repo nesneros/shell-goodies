@@ -1,8 +1,15 @@
-#!/bin/bash -e
+#! /usr/bin/env bash
+set -e
 
-gitDir="$(git rev-parse --git-dir)"
-d="$gitDir/.."
-trap 'rm -f "$d/$$.tags"' EXIT
+scriptDir=$(dirname "$0")
+topLevelDir=$(git -C "$scriptDir" rev-parse --show-toplevel)
+gitDir="$(git -C "$scriptDir" rev-parse --git-dir)"
+# scriptDir is within git dir. In submodule repo the above command works, in the root git repo it returns the empty string. Strange!?! (git version 2.7.2)
+# In a root repo the git dir is .git, so take the parent as topLevelDir
+[[ -z "$topLevelDir" ]] && topLevelDir="$gitDir/.."
+
+tmpTagsFile="$topLevelDir/.tags.tmp$$"
+trap 'rm -f "$tmpTagsFile"' EXIT
 outputFile="$gitDir/ctags.out"
 
 date -u > "$outputFile"
@@ -15,6 +22,7 @@ if [[ -f "$gitDir/projectile" ]] ; then
     fi
     echo "Projectile root: $root" >> "$outputFile"
 fi
-git ls-files | grep "^$root" | ctags -e --tag-relative -L - -f"$d/tmp$$.tags" --languages=-Vera,REXX >> "$outputFile" 2>&1
-mv "$d/tmp$$.tags" "$d/.tags"
+cd "$topLevelDir"
+git ls-files | grep "^$root" | ctags -e --tag-relative -L - -f"$tmpTagsFile" --languages=-Vera,REXX >> "$outputFile" 2>&1
+mv "$tmpTagsFile" "$topLevelDir/.tags"
 

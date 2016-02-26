@@ -1,2 +1,3 @@
-#!/bin/sh
-.git/hooks/ctags.sh >/dev/null &
+#! /usr/bin/env bash
+set -e
+$(dirname $0)/ctags.sh >/dev/null &
