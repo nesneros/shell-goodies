@@ -1,0 +1,23 @@
+#! /usr/bin/env bash
+set -e
+
+[[ "$1" = '--submodules' ]] && shift && submodules=t
+
+while [[ "$1" = -* ]]; do
+    case "$1" in
+        (--submodules)
+            shift
+            ;;
+        (*)
+            ;;
+    esac
+done
+
+suffix="$(date +%Y%m%d-%H%M%S)"
+
+dir=${1:-$PWD}
+gitDir=$(git -C "$dir" rev-parse --git-dir)
+_copy-git-hooks "$suffix" "$gitDir"
+
+[[ $submodules = t ]] && git submodule foreach --quiet eval \
+                             "_copy-git-hooks $suffix \$(git -C \"\$PWD\" rev-parse --git-dir)"

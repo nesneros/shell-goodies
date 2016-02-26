@@ -1,0 +1,13 @@
+#! /usr/bin/env bash
+set -e
+
+suffix=$1
+
+cd "$2/hooks"
+echo "Updating hooks in: $PWD"
+mkdir -p old-hooks
+for file in *; do
+    [[ "$file" != 'old-hooks' ]] && mv "$file" "old-hooks/$file.$suffix"
+done
+
+cp "$SHELL_GOODIES_ROOT/lib/git_template/hooks/"* .
