@@ -24,6 +24,10 @@ for f in ${SHELL_GOODIES_ROOT}/lib/zsh.d/{,$osTag/}*.zsh(N) ${d:-/somethingThatD
 done 
 unset d osTag
 
+### zsh-syntax-highlighting
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
+_source "${SHELL_GOODIES_ROOT}/thirdparty/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
 typeset -U path
 typeset -U manpath
 
