@@ -25,15 +25,20 @@ battery() {
                     fully_charged=$value;;
 	    esac
 	    if [[ -n $maxcap && -n $curcap && -n $extconnect ]]; then
-		if [[ "$curcap" == "$maxcap" || "$fully_charged" == "Yes" && $extconnect == "Yes"  ]]; then
-		    return
-		fi
-		local charge=$(( 100.0 * $curcap / $maxcap ))
-		printf "%3.1f\n" $charge
-		break
+	        #       if [[ "$curcap" == "$maxcap" || "$fully_charged" == "Yes" && $extconnect == "Yes"  ]]; then
+	        #	    return
+	        #       fi
+	        local charge=$(( 100.0 * $curcap / $maxcap ))
+	        printf "%3.1f\n" $charge
+	        break
 	    fi
 	done
 }
 
 # Go to sleep
-alias afk='osascript -e ''tell app "System Events" to sleep'''
+alias _sleep='osascript -e ''tell app "System Events" to sleep'''
+
+# Lock the screen
+alias _lock="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"
+
+alias afk="_lock ; _sleep"
