@@ -1,3 +1,6 @@
 [submodule "thirdparty/zsh-completions"]
 	path = thirdparty/zsh-completions
 	url = git@github.com:zsh-users/zsh-completions.git
+[submodule "thirdparty/zsh-syntax-highlighting"]
+	path = thirdparty/zsh-syntax-highlighting
+	url = git@github.com:zsh-users/zsh-syntax-highlighting.git
