@@ -30,9 +30,9 @@ goodies:source ${SHELL_GOODIES_ROOT}/thirdparty/zaw/zaw.zsh
 
 
 ### zsh-autosuggest
-goodies:source ${SHELL_GOODIES_ROOT}/thirdparty/zsh-autosuggestions/zsh-autosuggestions.zsh
-# Add history-substring-search-* widgets to list of widgets that clear the autosuggestion
-ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(history-substring-search-up history-substring-search-down)
+#goodies:source ${SHELL_GOODIES_ROOT}/thirdparty/zsh-autosuggestions/zsh-autosuggestions.zsh
+## Add history-substring-search-* widgets to list of widgets that clear the autosuggestion
+#ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(history-substring-search-up history-substring-search-down)
 
 
 ### zsh-syntax-highlighting
