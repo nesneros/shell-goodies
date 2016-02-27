@@ -25,21 +25,20 @@ for f in ${SHELL_GOODIES_ROOT}/lib/zsh.d/{,$osTag/}*.zsh(N) ${d:-/somethingThatD
 done 
 unset d osTag
 
-### zaw
-goodies:source ${SHELL_GOODIES_ROOT}/thirdparty/zaw/zaw.zsh
+### k 
+goodies:source "${SHELL_GOODIES_ROOT}/thirdparty/k/k.sh"
 
+### zaw
+goodies:source "${SHELL_GOODIES_ROOT}/thirdparty/zaw/zaw.zsh"
 
 ### zsh-autosuggest
 #goodies:source ${SHELL_GOODIES_ROOT}/thirdparty/zsh-autosuggestions/zsh-autosuggestions.zsh
 ## Add history-substring-search-* widgets to list of widgets that clear the autosuggestion
 #ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(history-substring-search-up history-substring-search-down)
 
-
 ### zsh-syntax-highlighting
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
 goodies:source "${SHELL_GOODIES_ROOT}/thirdparty/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-
-
 
 ### zsh-history-substring-search
 # This must be loaded after syntax highlighting

@@ -10,3 +10,6 @@
 [submodule "thirdparty/zaw"]
 	path = thirdparty/zaw
 	url = git@github.com:zsh-users/zaw.git
+[submodule "thirdparty/k"]
+	path = thirdparty/k
+	url = git@github.com:supercrabtree/k.git
