@@ -7,3 +7,6 @@
 [submodule "thirdparty/zsh-history-substring-search"]
 	path = thirdparty/zsh-history-substring-search
 	url = git@github.com:zsh-users/zsh-history-substring-search.git
+[submodule "thirdparty/zaw"]
+	path = thirdparty/zaw
+	url = git@github.com:zsh-users/zaw.git
