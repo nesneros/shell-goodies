@@ -13,6 +13,8 @@
 (delete-selection-mode t)           ; Delete selection when typing (like most editors does)
 (setq vc-follow-symlinks t)         ; Automatically follow symlinks
 (setq tags-revert-without-query 1)  ; Automatically reload tags when file changed without prompting
+(setq split-height-threshold 80)   ; Give preference to horizontal window splita
+(setq split-width-threshold nil)
 
 ;;; My Key bindings. Emacs convention is that \C-c[a-zA-A] is reserve for user
 (global-set-key "\C-cf" 'ffap)         ; find file at point
