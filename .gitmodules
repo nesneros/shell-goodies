@@ -4,3 +4,6 @@
 [submodule "thirdparty/zsh-autosuggestions"]
 	path = thirdparty/zsh-autosuggestions
 	url = git@github.com:zsh-users/zsh-autosuggestions.git
+[submodule "thirdparty/zsh-history-substring-search"]
+	path = thirdparty/zsh-history-substring-search
+	url = git@github.com:zsh-users/zsh-history-substring-search.git
