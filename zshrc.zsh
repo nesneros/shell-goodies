@@ -4,8 +4,9 @@ fpath=("$HOME/.goodies/fpath" "${fpath[@]}")
 
 _prezto_source zshrc
 
+# Should be after prezto is loaded (done my prezto if installed)
 autoload -Uz compinit
-compinit
+compinit -i
 
 goodiesInitFile=$HOME/.goodies/init
 [[ -f $goodiesInitFile ]] && _source "$goodiesInitFile"
