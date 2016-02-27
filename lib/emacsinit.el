@@ -129,6 +129,12 @@ point reaches the beginning or end of the buffer, stop there."
              ;; (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
              (global-set-key (kbd "C-c ai") 'aggressive-indent-mode))
 
+(for-package 'buffer-move
+             (global-set-key (kbd "<M-s-up>")     'buf-move-up)
+             (global-set-key (kbd "<M-s-down>")   'buf-move-down)
+             (global-set-key (kbd "<M-s-left>")   'buf-move-left)
+             (global-set-key (kbd "<M-s-right>")  'buf-move-right))
+
 ;;; Dash
 (eval-after-load "dash" '(dash-enable-font-lock))
 
@@ -196,7 +202,7 @@ point reaches the beginning or end of the buffer, stop there."
   t)
 (define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
 
- ;;; Mark down
+;;; Mark down
 (for-package 'markdown-mode
              (add-hook 'markdown-mode-hook
                        (lambda ()
