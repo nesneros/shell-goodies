@@ -1,1 +1,1 @@
-_prezto_source zlogin
+goodies:prezto_source zlogin

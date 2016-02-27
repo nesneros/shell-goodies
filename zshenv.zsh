@@ -3,28 +3,28 @@ local logFile="$HOME/.goodies/log.txt"
 
 typeset -F SECONDS
 
-_goodies_log() {
+goodies:log() {
     echo "$SECONDS: $1" >> "$logFile"
 }
 
-_goodies_log "BEGIN: zshenv.zsh"
+goodies:log "BEGIN: zshenv.zsh"
 
-_source() {
+goodies:source() {
     local start=$SECONDS
     source "$1"
     integer duration=$((1000 * ($SECONDS-start)))
-    [[ $duration -gt 0 ]] && _goodies_log "$duration ms to source '$1'"
+    [[ $duration -gt 0 ]] && goodies:log "$duration ms to source '$1'"
 }
 
-_prezto_source() {
+goodies:prezto_source() {
     local preztoFile="$HOME/.zprezto/runcoms/$1"
-    [[ -e "$preztoFile" ]] && _source "$preztoFile"
+    [[ -e "$preztoFile" ]] && goodies:source "$preztoFile"
 }
 
-[[ -f "$HOME/.goodies/envinit" ]] && _source "$HOME/.goodies/envinit"
+[[ -f "$HOME/.goodies/envinit" ]] && goodies:source "$HOME/.goodies/envinit"
 
 export SHELL_GOODIES_ROOT=${${(%):-%N}:A:h} # $0 doesn't work because it is a starup file for zsh
-_goodies_log "SHELL_GOODIES_ROOT=$SHELL_GOODIES_ROOT"
+goodies:log "SHELL_GOODIES_ROOT=$SHELL_GOODIES_ROOT"
 
 path=("$HOME/bin"(N) "$SHELL_GOODIES_ROOT/bin" $path /usr/local/{bin,sbin}(N))
 
@@ -43,9 +43,9 @@ if [[ "$OSTYPE" = "darwin"* ]]; then
     fi
 fi
 
-_prezto_source zshenv
+goodies:prezto_source zshenv
 
 typeset -U path
 #typeset -U manpath
 
-_goodies_log "END: zshenv.zsh"
+goodies:log "END: zshenv.zsh"

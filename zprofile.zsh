@@ -1,6 +1,6 @@
-_goodies_log "BEGIN: zprofile.zsh"
+goodies:log "BEGIN: zprofile.zsh"
 
-_prezto_source zprofile
+goodies:prezto_source zprofile
 
 if [[ -n "$BREW_PREFIX" ]]; then
     # Add coreutils to path if installed
@@ -11,4 +11,4 @@ if [[ -n "$BREW_PREFIX" ]]; then
     fi
 fi
 
-_goodies_log "END: zprofile.zsh"
+goodies:log "END: zprofile.zsh"
