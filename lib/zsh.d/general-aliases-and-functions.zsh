@@ -27,7 +27,7 @@ alias la='ls -lA'
 alias -g L='|less'
 alias -g H='|head'
 alias -g T='|tail -100f'
-alias -g G='|grep -e'
+alias -g G='|grep --ignore-case -E'
 alias -g S='|sort'
 
 alias md='mkdir -p'
