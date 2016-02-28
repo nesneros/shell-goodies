@@ -46,6 +46,13 @@
         version-control t
         backup-directory-alist `(("." . ,backup-dir))))
 
+;;; Visible mark settings. Must be set before package is loaded
+(defface visible-mark-active
+  '((((type tty) (class mono)))
+    (t (:background "magenta"))) "")
+(setq visible-mark-max 2)
+(setq visible-mark-faces `(visible-mark-face1 visible-mark-face2))
+
 ;;; Tramp
 (require 'tramp)
 (setq tramp-default-method "scp")
@@ -230,6 +237,11 @@ point reaches the beginning or end of the buffer, stop there."
              (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
              (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
              )
+
+
+;;; Visible mark
+(for-package 'visible-mark (global-visible-mark-mode 1))
+;; Face to use for mark is configured before loading package
 
 ;;; IBuffer
 (autoload 'ibuffer "ibuffer" "List buffers." t)
