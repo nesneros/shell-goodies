@@ -83,8 +83,6 @@
         try-complete-lisp-symbol-partially
         try-complete-lisp-symbol))
 
-(setq load-path (cons "/etc/unuxus/lib/emacs/" load-path))
-
 ;; From http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
 (defun smarter-move-beginning-of-line (arg)
   "Move point back to indentation of beginning of line.
