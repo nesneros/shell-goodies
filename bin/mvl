@@ -1,4 +1,5 @@
-#! /usr/bin/env zsh -e
+#! /usr/bin/env zsh
+set -e
 
 # Move a file and create symbolic link to it from its old location
 
@@ -11,7 +12,7 @@ usage: $PN file [destination]"
     exit 1
 }
 
-[[ $# -eq 1 ]] && exec $0 "$1" .
+[[ $# -eq 1 ]] && exec "$0" "$1" .
 [[ $# -ne 2 ]] && usage
 
 SRC="$1"

@@ -1,4 +1,5 @@
-#! /usr/bin/env zsh -e
+#! /usr/bin/env zsh
+set -e
 
 local dir="${0:h:A}"
 local goodiesDir="$HOME/.goodies"
