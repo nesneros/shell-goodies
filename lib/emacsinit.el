@@ -252,6 +252,11 @@ point reaches the beginning or end of the buffer, stop there."
 (for-package 'visible-mark (global-visible-mark-mode 1))
 ;; Face to use for mark is configured before loading package
 
+;;; wgrep - write to files in search result buffer
+(for-package 'wgrep
+             (setq wgrep-enable-key "w")
+             (setq wgrep-auto-save-buffer t))
+
 ;;; IBuffer
 (autoload 'ibuffer "ibuffer" "List buffers." t)
 
