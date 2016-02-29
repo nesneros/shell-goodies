@@ -13,15 +13,20 @@
 (delete-selection-mode t)           ; Delete selection when typing (like most editors does)
 (setq vc-follow-symlinks t)         ; Automatically follow symlinks
 (setq tags-revert-without-query 1)  ; Automatically reload tags when file changed without prompting
-(setq split-height-threshold 80)   ; Give preference to horizontal window splita
+(setq split-height-threshold 80)    ; Give preference to horizontal window splita
 (setq split-width-threshold nil)
+(savehist-mode 1)
+(electric-pair-mode 1)              ; auto close bracket insertion. New in emacs 24
 
 ;;; My Key bindings. Emacs convention is that \C-c[a-zA-A] is reserve for user
-(global-set-key "\C-cf" 'ffap)         ; find file at point
-(global-set-key "\M-/" 'hippie-expand) ; replace std Emacs expand key
-(global-set-key "\C-x\C-b" 'ibuffer)   ; replaces std buffer list
-(global-set-key "\C-cdf" 'describe-function)
-(global-set-key "\C-cdv" 'describe-variable)
+(global-set-key "\C-cf"              'ffap)         ; find file at point
+(global-set-key "\M-/"               'hippie-expand) ; replace std Emacs expand key
+(global-set-key "\C-x\C-b"           'ibuffer)   ; replaces std buffer list
+(global-set-key (kbd "C-c C-s")      'ag)
+(global-set-key (kbd "<M-s-up>")     'buf-move-up)
+(global-set-key (kbd "<M-s-down>")   'buf-move-down)
+(global-set-key (kbd "<M-s-left>")   'buf-move-left)
+(global-set-key (kbd "<M-s-right>")  'buf-move-right)
 
 ;;; Some mode mappings
 (add-to-list 'auto-mode-alist '("\\.zsh\\(-theme\\)?\\'" . shell-script-mode))
@@ -141,12 +146,6 @@ point reaches the beginning or end of the buffer, stop there."
              (global-aggressive-indent-mode 1)
              ;; (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
              (global-set-key (kbd "C-c ai") 'aggressive-indent-mode))
-
-(for-package 'buffer-move
-             (global-set-key (kbd "<M-s-up>")     'buf-move-up)
-             (global-set-key (kbd "<M-s-down>")   'buf-move-down)
-             (global-set-key (kbd "<M-s-left>")   'buf-move-left)
-             (global-set-key (kbd "<M-s-right>")  'buf-move-right))
 
 ;;; Dash
 (eval-after-load "dash" '(dash-enable-font-lock))
