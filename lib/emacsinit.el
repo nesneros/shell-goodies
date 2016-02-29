@@ -66,9 +66,6 @@
 (add-hook 'font-lock-mode-hook
           (lambda () (setq font-lock-maximum-decoration t)))
 
-;;; Enable fly spell for text mode
-(add-hook 'text-mode-hook 'flyspell-mode)
-
 ;;; Hippie expand
 (require 'hippie-exp)
 (setq hippie-expand-try-functions-list
@@ -161,6 +158,13 @@ point reaches the beginning or end of the buffer, stop there."
                                      (with-selected-window window
                                        (fit-window-to-buffer window 30)))))
              (add-hook 'after-init-hook #'global-flycheck-mode))
+
+;;; Flyspell
+(eval-after-load "flyspell"
+  '(progn
+     (add-hook 'text-mode-hook 'flyspell-mode)
+     (define-key flyspell-mouse-map [down-mouse-3] #'flyspell-correct-word)
+     (define-key flyspell-mouse-map [mouse-3] #'undefined)))
 
 ;;; git-gutter+
 (for-package 'git-gutter+
