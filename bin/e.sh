@@ -1,4 +1,5 @@
-#! /bin/bash -e
+#! /usr/bin/env bash
+set -e
 
 while [[ "$1" = -* ]] ; do
     case "$1" in
@@ -20,10 +21,8 @@ done
 [[ -z "$cmd" ]] && cmd=("$@")
 [[ -z "$cmd" ]] && cmd=(.)
 
-if ! type emacsclient > /dev/null ; then
-    emacs "$@"
-else
-    x=$(emacsclient --alternate-editor '' --eval '(x-display-list)' 2>/dev/null)
-    ([[ -z "$x" ]] || [[ "$x" = 'nil' ]]) && extras=--create-frame
-    emacsclient $extras --no-wait "${cmd[@]}" >/dev/null
-fi
+
+x=$(emacsclient --alternate-editor '' --eval '(x-display-list)' 2>/dev/null)
+([[ -z "$x" ]] || [[ "$x" = 'nil' ]]) && extras=--create-frame
+emacsclient $extras --no-wait "${cmd[@]}" >/dev/null
+
