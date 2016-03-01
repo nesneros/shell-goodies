@@ -47,8 +47,6 @@
             (cask-initialize emacs-cask-project)
           (error "EMACS_CASK_PROJECT not defined and Cask not in default location")))
     (error "cask.el not found at '/usr/local/share/emacs/site-lisp/cask/cask.el'")))
-;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
-;; (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 
 ;;; Load all files in .../lib/elisp.d
 (require 'dash)
