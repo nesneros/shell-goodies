@@ -21,8 +21,7 @@ done
 [[ -z "$cmd" ]] && cmd=("$@")
 [[ -z "$cmd" ]] && cmd=(.)
 
-
-x=$(emacsclient --alternate-editor '' --eval '(x-display-list)' 2>/dev/null)
+# See http://www.gnu.org/software/emacs/manual/html_mono/elisp.html#Frames for meaning of 'ns 
+x=$(emacsclient --alternate-editor '' --eval "(member 'ns (mapcar 'framep (frame-list)))" 2>/dev/null)
 ([[ -z "$x" ]] || [[ "$x" = 'nil' ]]) && extras=--create-frame
 emacsclient $extras --no-wait "${cmd[@]}" >/dev/null
-
