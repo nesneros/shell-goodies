@@ -25,6 +25,8 @@
 (global-set-key (kbd "<M-s-down>")   'buf-move-down)
 (global-set-key (kbd "<M-s-left>")   'buf-move-left)
 (global-set-key (kbd "<M-s-right>")  'buf-move-right)
+(global-set-key (kbd "C-x o")        'ace-window)
+(global-set-key (kbd "C-x v p")      'git-messenger:popup-message)
 
 ;;; Some mode mappings
 (add-to-list 'auto-mode-alist '("\\.zsh\\(-theme\\)?\\'" . shell-script-mode))
@@ -175,11 +177,19 @@ point reaches the beginning or end of the buffer, stop there."
 
 ;;; Packages installed by the package management should not be used before the package management is initialized
 
+;;; Ace Windows
+(for-package 'ace-window
+             (custom-set-faces
+              '(aw-leading-char-face ((t (:foreground "red" :height 3.0))))))
+
 ;;; Aggresive indent
 (for-package 'aggressive-indent
              (global-aggressive-indent-mode 1)
              ;; (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
              (global-set-key (kbd "C-c ai") 'aggressive-indent-mode))
+
+;;; Anzu
+(for-package 'anzu (global-anzu-mode 1))
 
 ;;; Dash
 (eval-after-load "dash" '(dash-enable-font-lock))
