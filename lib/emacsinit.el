@@ -35,6 +35,31 @@
 ;;; Some mode mappings
 (add-to-list 'auto-mode-alist '("\\.zsh\\(-theme\\)?\\'" . shell-script-mode))
 
+;;; Package management
+(require 'package) ;; for package-installed-p function
+(package-initialize)
+(let ((emacs-cask-project (getenv "EMACS_CASK_PROJECT"))
+      (cask-el "/usr/local/share/emacs/site-lisp/cask/cask.el")) ;; installed by Homebrew
+  (if (file-exists-p cask-el)
+      (progn
+        (require 'cask cask-el)
+        (if (or emacs-cask-project (file-exists-p "~/.emacs.d/Cask"))
+            (cask-initialize emacs-cask-project)
+          (error "EMACS_CASK_PROJECT not defined and Cask not in default location")))
+    (error "cask.el not found at '/usr/local/share/emacs/site-lisp/cask/cask.el'")))
+;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
+;; (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+
+;;; Load all files in .../lib/elisp.d
+(require 'dash)
+(-when-let* ((shell-goodies-dir (getenv "SHELL_GOODIES_ROOT"))
+             (lib-dir (expand-file-name "lib/elisp.d" shell-goodies-dir))
+             (loaded (mapcar #'car load-history))) ; All loaded files. Don't load same file twice
+  (dolist (file (directory-files lib-dir t ".+\\.elc?$"))
+    (unless (member file loaded)
+      (load (file-name-sans-extension file))
+      (push file loaded))))
+
 ;;; Backup settings
 (let ((backup-dir (expand-file-name "backup" user-emacs-directory)))
   (unless (file-directory-p backup-dir)
@@ -82,103 +107,24 @@
         try-complete-lisp-symbol-partially
         try-complete-lisp-symbol))
 
-;; From http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
-(defun smarter-move-beginning-of-line (arg)
-  "Move point back to indentation of beginning of line.
-
-Move point to the first non-whitespace character on this line.
-If point is already there, move to the beginning of the line.
-Effectively toggle between the first non-whitespace character and
-the beginning of the line.
-
-If ARG is not nil or 1, move forward ARG - 1 lines first.  If
-point reaches the beginning or end of the buffer, stop there."
-  (interactive "^p")
-  (setq arg (or arg 1))
-
-  ;; Move lines first
-  (when (/= arg 1)
-    (let ((line-move-visual nil))
-      (forward-line (1- arg))))
-
-  (let ((orig-point (point)))
-    (back-to-indentation)
-    (when (= orig-point (point))
-      (move-beginning-of-line 1))))
-
-;; remap C-a to `smarter-move-beginning-of-line'
-(global-set-key [remap move-beginning-of-line]
-                'smarter-move-beginning-of-line)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Rememeber mode for files with mode explicit set
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;; Get the auto mode for the current buffer
-(defun get-auto-mode()
-  (fset 'orig-set-auto-mode-0 (symbol-function 'set-auto-mode-0))
-  (unwind-protect
-      (catch 'auto-mode
-        ;; set-auto-mode calls set-auto-mode-0 with the mode it finds.
-        ;; Change temporarily the definition of set-auto-mode-0
-        (fset 'set-auto-mode-0 (lambda (mode keep) (throw 'auto-mode mode)))
-        (set-auto-mode))
-    (fset 'set-auto-mode-0 (symbol-function 'orig-set-auto-mode-0))))
-
-(defvar explicit-set-mode-alist '())
-(setq savehist-additional-variables '(explicit-set-mode-alist))
-(setq auto-mode-alist (append explicit-set-mode-alist auto-mode-alist))
-
-(add-hook 'after-change-major-mode-hook
-          (lambda ()
-            (when (and
-                   buffer-file-name
-                   (not (eq major-mode (get-auto-mode)))
-                   (not (eq major-mode 'fundamental-mode)))
-              (let ((c (cons buffer-file-name major-mode)))
-                (setq explicit-set-mode-alist (cons c explicit-set-mode-alist))
-                (setq auto-mode-alist (cons c auto-mode-alist))))))
-
-;; trim explicit-set-mode-alist before saving hist
-(add-hook 'savehist-save-hook
-          (lambda ()
-            (setq explicit-set-mode-alist (cl-remove-duplicates explicit-set-mode-alist :key #'car :test #'string= :from-end t))
-            (setq auto-mode-alist         (cl-remove-duplicates auto-mode-alist         :key #'car :test #'string= :from-end t))))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;;; Git key bindings
 (defvar git-command-map (make-sparse-keymap) "Git keymap")
 (global-set-key (kbd "s-i") git-command-map)
-
-;;; Package management
-(require 'package) ;; for package-installed-p function
-(package-initialize)
-(let ((emacs-cask-project (getenv "EMACS_CASK_PROJECT"))
-      (cask-el "/usr/local/share/emacs/site-lisp/cask/cask.el")) ;; installed by Homebrew
-  (if (file-exists-p cask-el) 
-      (progn
-        (require 'cask cask-el)
-        (if (or emacs-cask-project (file-exists-p "~/.emacs.d/Cask")) 
-            (cask-initialize emacs-cask-project)
-          (error "EMACS_CASK_PROJECT not defined and Cask not in default location")))
-    (error "cask.el not found at '/usr/local/share/emacs/site-lisp/cask/cask.el'")))
-
-;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
-;; (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 
 (defmacro for-package (package &rest body)
   (if (package-installed-p (eval package))
       (while body
         (eval (pop body)))
     (message "*** Package '%s' is not installed" (eval package))))
+(put 'for-package 'lisp-indent-function 1)
 
 ;;; Packages installed by the package management should not be used before the package management is initialized
 
 ;;; Aggresive indent
 (for-package 'aggressive-indent
-             (global-aggressive-indent-mode 1)
-             ;; (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
-             (global-set-key (kbd "C-c ai") 'aggressive-indent-mode))
+  (global-aggressive-indent-mode 1)
+  ;; (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
+  (global-set-key (kbd "C-c ai") 'aggressive-indent-mode))
 
 ;;; Anzu
 (for-package 'anzu (global-anzu-mode 1))
