@@ -16,9 +16,10 @@
 (savehist-mode 1)
 (electric-pair-mode 1)              ; auto close bracket insertion. New in emacs 24
 
-;;; My Key bindings. Emacs convention is that \C-c[a-zA-A] is reserve for user
+;;; Key bindings. Emacs convention is that \C-c[a-zA-A] is reserve for user
 (global-set-key "\C-cf"              'ffap)         ; find file at point
 (global-set-key "\M-/"               'hippie-expand) ; replace std Emacs expand key
+(global-set-key "\M- "               'hippie-expand) ; replace std Emacs expand key
 (global-set-key "\C-x\C-b"           'ibuffer)   ; replaces std buffer list
 (global-set-key (kbd "C-c C-s")      'ag)
 (global-set-key (kbd "<M-s-up>")     'buf-move-up)
