@@ -85,7 +85,7 @@
 (setq tramp-default-method "scp")
 
 ;;; Highlight matching parentheses next to cursor
-(require 'paren) 
+(require 'paren)
 (show-paren-mode t)
 
 ;; syntax highlight
