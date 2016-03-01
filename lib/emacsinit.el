@@ -108,8 +108,22 @@
         try-complete-lisp-symbol))
 
 ;;; Git key bindings
-(defvar git-command-map (make-sparse-keymap) "Git keymap")
+(defvar git-command-map (make-sparse-keymap))
 (global-set-key (kbd "s-i") git-command-map)
+(define-key git-command-map (kbd "s-i") 'magit-status)
+;; Jump between hunks
+(define-key git-command-map (kbd "n") 'git-gutter+-next-hunk)
+(define-key git-command-map (kbd "p") 'git-gutter+-previous-hunk)
+;; Act on hunks
+(define-key git-command-map (kbd "v =") 'git-gutter+-show-hunk)
+(define-key git-command-map (kbd "r") 'git-gutter+-revert-hunks)
+;; Stage hunk at point.
+;; If region is active, stage all hunk lines within the region.
+(define-key git-command-map (kbd "t") 'git-gutter+-stage-hunks)
+(define-key git-command-map (kbd "c") 'git-gutter+-commit)
+(define-key git-command-map (kbd "C") 'git-gutter+-stage-and-commit)
+(define-key git-command-map (kbd "C-y") 'git-gutter+-stage-and-commit-whole-buffer)
+(define-key git-command-map (kbd "U") 'git-gutter+-unstage-whole-buffer)
 
 (defmacro for-package (package &rest body)
   (if (package-installed-p (eval package))
@@ -148,21 +162,7 @@
      (define-key flyspell-mouse-map [mouse-3] #'undefined)))
 
 ;;; git-gutter+
-(for-package 'git-gutter+
-  (global-git-gutter+-mode +1)
-  ;; Jump between hunks
-  (define-key git-command-map (kbd "n") 'git-gutter+-next-hunk)
-  (define-key git-command-map (kbd "p") 'git-gutter+-previous-hunk)
-  ;; Act on hunks
-  (define-key git-command-map (kbd "v =") 'git-gutter+-show-hunk)
-  (define-key git-command-map (kbd "r") 'git-gutter+-revert-hunks)
-  ;; Stage hunk at point.
-  ;; If region is active, stage all hunk lines within the region.
-  (define-key git-command-map (kbd "t") 'git-gutter+-stage-hunks)
-  (define-key git-command-map (kbd "c") 'git-gutter+-commit)
-  (define-key git-command-map (kbd "C") 'git-gutter+-stage-and-commit)
-  (define-key git-command-map (kbd "C-y") 'git-gutter+-stage-and-commit-whole-buffer)
-  (define-key git-command-map (kbd "U") 'git-gutter+-unstage-whole-buffer))
+(for-package 'git-gutter+ (global-git-gutter+-mode +1))
 
 ;;; Ido
 (require 'ido)
@@ -188,7 +188,6 @@
 (for-package 'magit
   (global-set-key (kbd "C-x g") 'magit-status)
   (setq magit-completing-read-function 'magit-ido-completing-read)
-  (define-key git-command-map (kbd "s-i") 'magit-status)
   (autoload 'ido-enter-magit-status "magit.el")
   (add-hook 'ido-setup-hook
             (lambda ()
