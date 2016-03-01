@@ -9,7 +9,7 @@ mkdir -p "$goodiesDir"
 mkdir -p "$emacsDir"
 
 local prog
-local neededProgs=(emacs emacsclient git)
+local neededProgs=(emacs emacsclient git cask)
 case "$OSTYPE" in
     (darwin*)
         neededProgs=(${neededProgs[@]} brew)
