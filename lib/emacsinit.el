@@ -134,11 +134,11 @@
 
 ;;; Flycheck
 (for-package 'flycheck
-             (add-hook 'flycheck-error-list-after-refresh-hook
-                       '(lambda () (-when-let (window (flycheck-get-error-list-window t))
-                                     (with-selected-window window
-                                       (fit-window-to-buffer window 30)))))
-             (add-hook 'after-init-hook #'global-flycheck-mode))
+  (add-hook 'flycheck-error-list-after-refresh-hook
+            '(lambda () (-when-let (window (flycheck-get-error-list-window t))
+                          (with-selected-window window
+                            (fit-window-to-buffer window 30)))))
+  (add-hook 'after-init-hook #'global-flycheck-mode))
 
 ;;; Flyspell
 (eval-after-load "flyspell"
@@ -149,20 +149,20 @@
 
 ;;; git-gutter+
 (for-package 'git-gutter+
-             (global-git-gutter+-mode +1)
-             ;; Jump between hunks
-             (define-key git-command-map (kbd "n") 'git-gutter+-next-hunk)
-             (define-key git-command-map (kbd "p") 'git-gutter+-previous-hunk)
-             ;; Act on hunks
-             (define-key git-command-map (kbd "v =") 'git-gutter+-show-hunk)
-             (define-key git-command-map (kbd "r") 'git-gutter+-revert-hunks)
-             ;; Stage hunk at point.
-             ;; If region is active, stage all hunk lines within the region.
-             (define-key git-command-map (kbd "t") 'git-gutter+-stage-hunks)
-             (define-key git-command-map (kbd "c") 'git-gutter+-commit)
-             (define-key git-command-map (kbd "C") 'git-gutter+-stage-and-commit)
-             (define-key git-command-map (kbd "C-y") 'git-gutter+-stage-and-commit-whole-buffer)
-             (define-key git-command-map (kbd "U") 'git-gutter+-unstage-whole-buffer))
+  (global-git-gutter+-mode +1)
+  ;; Jump between hunks
+  (define-key git-command-map (kbd "n") 'git-gutter+-next-hunk)
+  (define-key git-command-map (kbd "p") 'git-gutter+-previous-hunk)
+  ;; Act on hunks
+  (define-key git-command-map (kbd "v =") 'git-gutter+-show-hunk)
+  (define-key git-command-map (kbd "r") 'git-gutter+-revert-hunks)
+  ;; Stage hunk at point.
+  ;; If region is active, stage all hunk lines within the region.
+  (define-key git-command-map (kbd "t") 'git-gutter+-stage-hunks)
+  (define-key git-command-map (kbd "c") 'git-gutter+-commit)
+  (define-key git-command-map (kbd "C") 'git-gutter+-stage-and-commit)
+  (define-key git-command-map (kbd "C-y") 'git-gutter+-stage-and-commit-whole-buffer)
+  (define-key git-command-map (kbd "U") 'git-gutter+-unstage-whole-buffer))
 
 ;;; Ido
 (require 'ido)
@@ -171,58 +171,63 @@
 (setq ido-enable-flex-matching t
       ido-use-virtual-buffers t)
 (for-package 'ido-at-point
-             (ido-at-point-mode))
+  (ido-at-point-mode))
 (for-package 'ido-ubiquitous
-             (ido-ubiquitous-mode 1))
+  (ido-ubiquitous-mode 1))
 
 ;;; Mark down
 (for-package 'markdown-mode
-             (add-hook 'markdown-mode-hook
-                       (lambda ()
-                         (setq markdown-command "pandoc --smart -f markdown -t html")
-                         (visual-line-mode t)
-                         (for-package 'writegood-mode (writegood-mode t))
-                         (flyspell-mode t))))
+  (add-hook 'markdown-mode-hook
+            (lambda ()
+              (setq markdown-command "pandoc --smart -f markdown -t html")
+              (visual-line-mode t)
+              (for-package 'writegood-mode (writegood-mode t))
+              (flyspell-mode t))))
 
 ;;; Magit
 (for-package 'magit
-             (global-set-key (kbd "C-x g") 'magit-status)
-             (setq magit-completing-read-function 'magit-ido-completing-read)
-             (define-key git-command-map (kbd "s-i") 'magit-status)
-             (autoload 'ido-enter-magit-status "magit.el")
-             (add-hook 'ido-setup-hook
-                       (lambda ()
-                         (define-key ido-completion-map
-                           (kbd "C-x g") 'ido-enter-magit-status))))
-
+  (global-set-key (kbd "C-x g") 'magit-status)
+  (setq magit-completing-read-function 'magit-ido-completing-read)
+  (define-key git-command-map (kbd "s-i") 'magit-status)
+  (autoload 'ido-enter-magit-status "magit.el")
+  (add-hook 'ido-setup-hook
+            (lambda ()
+              (define-key ido-completion-map
+                (kbd "C-x g") 'ido-enter-magit-status))))
 
 ;;; Multiple cursors
 (for-package 'multiple-cursors
-             (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-             (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-             (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-             (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-             )
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+  )
 
 
 ;;; Projectile
 (for-package 'projectile
-             (global-set-key (kbd "s-p") 'projectile-command-map)
-             (setq projectile-tags-file-name ".tags")
-             (projectile-global-mode))
+  (global-set-key (kbd "s-p") 'projectile-command-map)
+  (setq projectile-tags-file-name ".tags")
+  (projectile-global-mode))
 
 ;;; Project Explorer
 (for-package 'project-explorer
-             (define-key projectile-command-map (kbd "s-p") 'project-explorer-toggle))
+  (define-key projectile-command-map (kbd "s-p") 'project-explorer-toggle))
 
 ;;; Rainbow Delimiters
 (for-package 'rainbow-delimiters (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
+;;; Smart mode line
+(for-package 'smart-mode-line
+  (sml/setup)
+  ;; Rich Minority - package loaded by smart-mode-line
+  (setq rm-blacklist (cl-list* " Anzu" " ARev" " GitGutter" rm-blacklist)))
+
 ;;; smex
 (for-package 'smex
-             (smex-initialize)
-             (global-set-key (kbd "M-x") 'smex)
-             (global-set-key (kbd "M-X") 'smex-major-mode-commands))
+  (smex-initialize)
+  (global-set-key (kbd "M-x") 'smex)
+  (global-set-key (kbd "M-X") 'smex-major-mode-commands))
 
 ;;; Visible mark
 (for-package 'visible-mark (global-visible-mark-mode 1))
@@ -230,15 +235,15 @@
 
 ;;; wgrep - write to files in search result buffer
 (for-package 'wgrep
-             (setq wgrep-enable-key "w")
-             (setq wgrep-auto-save-buffer t))
+  (setq wgrep-enable-key "w")
+  (setq wgrep-auto-save-buffer t))
 
 ;;; IBuffer
 (autoload 'ibuffer "ibuffer" "List buffers." t)
 
-(require 'server)
-(or (server-running-p)
-    (server-start))
+;; (require 'server)
+;; (or (server-running-p)
+;;     (server-start))
 
 ;;; Update frame title
 (setq frame-title-format
