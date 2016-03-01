@@ -150,7 +150,8 @@
             '(lambda () (-when-let (window (flycheck-get-error-list-window t))
                           (with-selected-window window
                             (fit-window-to-buffer window 30)))))
-  (add-hook 'after-init-hook #'global-flycheck-mode))
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
 ;;; Flyspell
 (eval-after-load "flyspell"
