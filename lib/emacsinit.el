@@ -28,18 +28,15 @@
 (global-set-key (kbd "C-x o")        'ace-window)
 (global-set-key (kbd "C-x v p")      'git-messenger:popup-message)
 
+;;; Customization placed in its own file. Create it if it doesn't exist
+(defconst custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file t t)
+
 ;;; Some mode mappings
 (add-to-list 'auto-mode-alist '("\\.zsh\\(-theme\\)?\\'" . shell-script-mode))
 
 ;;; Backup settings
-(let* ((emacs-dir (expand-file-name "~/.emacs.d"))
-       (backup-dir (expand-file-name "backup" emacs-dir)))
-
-  ;; Create the directories if they doesn't exist
-  (unless (file-directory-p emacs-dir)
-    (make-directory emacs-dir)
-    (set-file-modes emacs-dir 448))
-
+(let ((backup-dir (expand-file-name "backup" user-emacs-directory)))
   (unless (file-directory-p backup-dir)
     (make-directory backup-dir)
     (set-file-modes backup-dir 448))
@@ -333,20 +330,3 @@ point reaches the beginning or end of the buffer, stop there."
        (ls-prog (expand-file-name "/bin/gls" brew-prefix)))
   (if (file-exists-p ls-prog)
       (setq insert-directory-program ls-prog)))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(font-use-system-font t)
- '(magit-am-arguments (quote ("--3way")))
- '(magit-commit-arguments nil)
- '(show-paren-mode t))
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
