@@ -237,34 +237,6 @@ point reaches the beginning or end of the buffer, stop there."
 (for-package 'ido-ubiquitous
              (ido-ubiquitous-mode 1))
 
-;;; Projectile
-(for-package 'projectile
-             (global-set-key (kbd "s-p") 'projectile-command-map)
-             (setq projectile-tags-file-name ".tags")
-             (projectile-global-mode))
-
-;;; Project Explorer
-(for-package 'project-explorer
-             (define-key projectile-command-map (kbd "s-p") 'project-explorer-toggle))
-
-;;; smex
-(for-package 'smex
-             (smex-initialize)
-             (global-set-key (kbd "M-x") 'smex)
-             (global-set-key (kbd "M-X") 'smex-major-mode-commands))
-
-;;; git-blame
-;;;(autoload 'git-blame-mode "git-blame"
-;;;  "Minor mode for incremental blame for Git." t)
-
-;;; ace jump
-(autoload
-  'ace-jump-mode
-  "ace-jump-mode"
-  "Emacs quick move minor mode"
-  t)
-(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
-
 ;;; Mark down
 (for-package 'markdown-mode
              (add-hook 'markdown-mode-hook
@@ -294,6 +266,25 @@ point reaches the beginning or end of the buffer, stop there."
              (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
              )
 
+
+;;; Projectile
+(for-package 'projectile
+             (global-set-key (kbd "s-p") 'projectile-command-map)
+             (setq projectile-tags-file-name ".tags")
+             (projectile-global-mode))
+
+;;; Project Explorer
+(for-package 'project-explorer
+             (define-key projectile-command-map (kbd "s-p") 'project-explorer-toggle))
+
+;;; Rainbow Delimiters
+(for-package 'rainbow-delimiters (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+;;; smex
+(for-package 'smex
+             (smex-initialize)
+             (global-set-key (kbd "M-x") 'smex)
+             (global-set-key (kbd "M-X") 'smex-major-mode-commands))
 
 ;;; Visible mark
 (for-package 'visible-mark (global-visible-mark-mode 1))
