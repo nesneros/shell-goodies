@@ -174,11 +174,6 @@ point reaches the beginning or end of the buffer, stop there."
 
 ;;; Packages installed by the package management should not be used before the package management is initialized
 
-;;; Ace Windows
-(for-package 'ace-window
-             (custom-set-faces
-              '(aw-leading-char-face ((t (:foreground "red" :height 3.0))))))
-
 ;;; Aggresive indent
 (for-package 'aggressive-indent
              (global-aggressive-indent-mode 1)
