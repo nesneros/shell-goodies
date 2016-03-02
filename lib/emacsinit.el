@@ -11,7 +11,7 @@
 (delete-selection-mode t)           ; Delete selection when typing (like most editors does)
 (setq vc-follow-symlinks t)         ; Automatically follow symlinks
 (setq tags-revert-without-query 1)  ; Automatically reload tags when file changed without prompting
-(setq split-height-threshold 80)    ; Give preference to horizontal window splita
+(setq split-height-threshold 80)    ; Give preference to horizontal window split
 (setq split-width-threshold nil)
 (savehist-mode 1)
 (electric-pair-mode 1)              ; auto close bracket insertion. New in emacs 24
@@ -29,23 +29,30 @@
 (global-set-key (kbd "<M-s-right>")  'buf-move-right)
 (global-set-key (kbd "C-x o")        'ace-window)
 (global-set-key (kbd "C-x v p")      'git-messenger:popup-message)
-(global-set-key (kbd "s-w")          'delete-window)  ;; Cmd-W closes an Emacs window, not the frame
+(global-set-key (kbd "s-w")          'delete-window)  ;; Cmd-W closes an  window, not the frame
 
-(require 'dash)
-(-when-let ((goodies-root (getenv "SHELL_GOODIES_ROOT")))
-  ;; Initialize cask
-  (let ((emacs-cask-project (expand-file-name "lib/emacs" goodies-root))
-        (cask-el "/usr/local/share/emacs/site-lisp/cask/cask.el"))
-    (unless (file-exists-p cask-el) (error "cask.el not found at '/usr/local/share/emacs/site-lisp/cask/cask.el'"))
-    (cask-initialize emacs-cask-project))
+;;; Customization placed in its own file. Create it if it doesn't exist
+(defconst custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file t t)
 
-  ;; Load all files in .../lib/elisp.d
-  (let ((lib-dir (expand-file-name "lib/elisp.d" goodies-root))
-        (loaded (mapcar #'car load-history))) ; All loaded files. Don't load same file twice
-    (dolist (file (directory-files lib-dir t ".+\\.elc?$"))
-      (unless (member file loaded)
-        (load (file-name-sans-extension file))
-        (push file loaded)))))
+(let ((goodies-root (getenv "SHELL_GOODIES_ROOT")))
+  (if goodies-root
+      (progn
+        ;; Initialize cask
+        (let ((emacs-cask-project (expand-file-name "lib/emacs" goodies-root))
+              (cask-el "/usr/local/share/emacs/site-lisp/cask/cask.el"))
+          (unless (file-exists-p cask-el) (error "cask.el not found at '/usr/local/share/emacs/site-lisp/cask/cask.el'"))
+          (require 'cask cask-el)
+          (cask-initialize emacs-cask-project))
+
+        ;; Load all files in .../lib/elisp.d
+        (let ((lib-dir (expand-file-name "lib/elisp.d" goodies-root))
+              (loaded (mapcar #'car load-history))) ; All loaded files. Don't load same file twice
+          (dolist (file (directory-files lib-dir t ".+\\.elc?$"))
+            (unless (member file loaded)
+              (load (file-name-sans-extension file))
+              (push file loaded)))))
+    (message "SHELL_GOODIES_ROOT not defined. Limited functionality")))
 
 (defun toggle-flycheck-errors-window ()
   (interactive)
