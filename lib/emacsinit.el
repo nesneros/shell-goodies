@@ -31,6 +31,22 @@
 (global-set-key (kbd "C-x v p")      'git-messenger:popup-message)
 (global-set-key (kbd "s-w")          'delete-window)  ;; Cmd-W closes an Emacs window, not the frame
 
+(require 'dash)
+(-when-let ((goodies-root (getenv "SHELL_GOODIES_ROOT")))
+  ;; Initialize cask
+  (let ((emacs-cask-project (expand-file-name "lib/emacs" goodies-root))
+        (cask-el "/usr/local/share/emacs/site-lisp/cask/cask.el"))
+    (unless (file-exists-p cask-el) (error "cask.el not found at '/usr/local/share/emacs/site-lisp/cask/cask.el'"))
+    (cask-initialize emacs-cask-project))
+
+  ;; Load all files in .../lib/elisp.d
+  (let ((lib-dir (expand-file-name "lib/elisp.d" goodies-root))
+        (loaded (mapcar #'car load-history))) ; All loaded files. Don't load same file twice
+    (dolist (file (directory-files lib-dir t ".+\\.elc?$"))
+      (unless (member file loaded)
+        (load (file-name-sans-extension file))
+        (push file loaded)))))
+
 (defun toggle-flycheck-errors-window ()
   (interactive)
   (let ((errors-win (get-buffer-window "*Flycheck errors*")))
@@ -41,7 +57,7 @@
             (list-flycheck-errors)
           (split-window nil -5 'below)
           (list-flycheck-errors))))))
-  
+
 ;;; Customization placed in its own file. Create it if it doesn't exist
 (defconst custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file t t)
@@ -52,25 +68,7 @@
 ;;; Package management
 (require 'package) ;; for package-installed-p function
 (package-initialize)
-(let ((emacs-cask-project (getenv "EMACS_CASK_PROJECT"))
-      (cask-el "/usr/local/share/emacs/site-lisp/cask/cask.el")) ;; installed by Homebrew
-  (if (file-exists-p cask-el)
-      (progn
-        (require 'cask cask-el)
-        (if (or emacs-cask-project (file-exists-p "~/.emacs.d/Cask"))
-            (cask-initialize emacs-cask-project)
-          (error "EMACS_CASK_PROJECT not defined and Cask not in default location")))
-    (error "cask.el not found at '/usr/local/share/emacs/site-lisp/cask/cask.el'")))
 
-;;; Load all files in .../lib/elisp.d
-(require 'dash)
-(-when-let* ((shell-goodies-dir (getenv "SHELL_GOODIES_ROOT"))
-             (lib-dir (expand-file-name "lib/elisp.d" shell-goodies-dir))
-             (loaded (mapcar #'car load-history))) ; All loaded files. Don't load same file twice
-  (dolist (file (directory-files lib-dir t ".+\\.elc?$"))
-    (unless (member file loaded)
-      (load (file-name-sans-extension file))
-      (push file loaded))))
 
 ;;; Backup settings
 (let ((backup-dir (expand-file-name "backup" user-emacs-directory)))
