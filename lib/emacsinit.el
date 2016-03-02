@@ -65,17 +65,11 @@
           (split-window nil -5 'below)
           (list-flycheck-errors))))))
 
-;;; Customization placed in its own file. Create it if it doesn't exist
-(defconst custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file t t)
-
 ;;; Some mode mappings
 (add-to-list 'auto-mode-alist '("\\.zsh\\(-theme\\)?\\'" . shell-script-mode))
 
-;;; Package management
-(require 'package) ;; for package-installed-p function
-(package-initialize)
-
+;;; Customization of shell-script-mode
+(add-hook 'sh-mode-hook '(lambda () (modify-syntax-entry ?$ "w")))
 
 ;;; Backup settings
 (let ((backup-dir (expand-file-name "backup" user-emacs-directory)))
@@ -255,6 +249,14 @@
   (sml/setup)
   ;; Rich Minority - package loaded by smart-mode-line
   (setq rm-blacklist (cl-list* " Anzu" " ARev" " company" " GitGutter" rm-blacklist)))
+
+;;; Smartparens
+; not compatible with delete-selection-mode. Electric pair mode seems to work better
+(for-package 'smartparens
+  ;;(require 'smartparens-config)
+  (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
+  (add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
+  (show-smartparens-global-mode 1))
 
 ;;; smex
 (for-package 'smex
