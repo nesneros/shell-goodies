@@ -29,5 +29,5 @@ done
 
 # See http://www.gnu.org/software/emacs/manual/html_mono/elisp.html#Frames for meaning of 'ns 
 x=$(emacsclient --alternate-editor '' --eval "(member 'ns (mapcar 'framep (frame-list)))" 2>/dev/null)
-([[ -z "$x" ]] || [[ "$x" = 'nil' ]]) && cmd=(--create-frame ${cmd[@]})
+[[ -z "$x" || "$x" = 'nil' ]] && cmd=(--create-frame ${cmd[@]})
 emacsclient --no-wait "${cmd[@]}" >/dev/null
