@@ -19,16 +19,29 @@
 ;;; Key bindings. Emacs convention is that \C-c[a-zA-A] is reserve for user
 (global-set-key "\C-cf"              'ffap)         ; find file at point
 (global-set-key "\M-/"               'hippie-expand) ; replace std Emacs expand key
-(global-set-key "\M- "               'hippie-expand) ; replace std Emacs expand key
+(global-set-key "\M- "               'company-complete)
 (global-set-key "\C-x\C-b"           'ibuffer)   ; replaces std buffer list
 (global-set-key (kbd "C-c C-s")      'ag)
+(global-set-key (kbd "C-c l")        'toggle-flycheck-errors-window)
 (global-set-key (kbd "<M-s-up>")     'buf-move-up)
 (global-set-key (kbd "<M-s-down>")   'buf-move-down)
 (global-set-key (kbd "<M-s-left>")   'buf-move-left)
 (global-set-key (kbd "<M-s-right>")  'buf-move-right)
 (global-set-key (kbd "C-x o")        'ace-window)
 (global-set-key (kbd "C-x v p")      'git-messenger:popup-message)
+(global-set-key (kbd "s-w")          'delete-window)  ;; Cmd-W closes an Emacs window, not the frame
 
+(defun toggle-flycheck-errors-window ()
+  (interactive)
+  (let ((errors-win (get-buffer-window "*Flycheck errors*")))
+    (if errors-win
+        (delete-window errors-win)
+      (let ((height (window-total-height)))
+        (if (< height 20)
+            (list-flycheck-errors)
+          (split-window nil -5 'below)
+          (list-flycheck-errors))))))
+  
 ;;; Customization placed in its own file. Create it if it doesn't exist
 (defconst custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file t t)
@@ -142,6 +155,24 @@
 ;;; Anzu
 (for-package 'anzu (global-anzu-mode 1))
 
+;;; Auto-complete
+(for-package 'auto-complete
+  (require 'fuzzy)
+  (ac-config-default)
+  ;; ac-source-filename has a require of 0. Remove it and use default value
+  (setq ac-source-filename (assq-delete-all 'require ac-source-filename))
+  (setq-default ac-sources (cons 'ac-source-filename ac-sources)))
+
+;;; Company
+(for-package 'company
+  (global-company-mode))
+(for-package 'company-shell
+  (add-to-list 'company-backends 'company-shell)
+  ;; company-files is part of backends, but doesn't seem to work when late in the list
+  (setq company-backends (cons #'company-files company-backends)))
+(for-package 'company-flx (company-flx-mode +1))
+(for-package 'company-quickhelp (company-quickhelp-mode 1))
+
 ;;; Dash
 (eval-after-load "dash" '(dash-enable-font-lock))
 
@@ -218,7 +249,7 @@
 (for-package 'smart-mode-line
   (sml/setup)
   ;; Rich Minority - package loaded by smart-mode-line
-  (setq rm-blacklist (cl-list* " Anzu" " ARev" " GitGutter" rm-blacklist)))
+  (setq rm-blacklist (cl-list* " Anzu" " ARev" " company" " GitGutter" rm-blacklist)))
 
 ;;; smex
 (for-package 'smex
