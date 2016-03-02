@@ -9,7 +9,7 @@ mkdir -p "$goodiesDir"
 mkdir -p "$emacsDir"
 
 local prog
-local neededProgs=(emacs emacsclient git cask)
+local neededProgs=(cask emacs emacsclient git)
 case "$OSTYPE" in
     (darwin*)
         neededProgs=(${neededProgs[@]} brew)
@@ -26,8 +26,11 @@ done
 local force createInitFile symlink
 while [[ "$1" = -* ]]; do
     case $1 in
-        (--create-init-file) 
+        (--create-init-file)
             createInitFile=t
+            ;;
+        (--skip-cask)
+            skipCask=1
             ;;
         (--force)
             force=t
@@ -49,11 +52,27 @@ createInitFile() {
 }
 
 _link() {
-    echo "Linking '$1' to '$2'"
-    ln -sf "$1" "$2"
+    if [[ -L "$2" && $(readlink "$2")  = "$1" ]]; then
+        echo "'$2' is already linked to '$1'"
+    else
+        echo "Linking '$1' to '$2'"
+        ln -sf "$1" "$2"
+    fi
 }
 
 doInstall() {
+    ln -sf "$dir/thirdparty/cask/bin/cask" "$dir/bin/cask"
+
+    if [[ ""$skipCask"" != 1 ]]; then
+        echo "*** Installing/updating Emacs casks"
+        (
+            cd "$dir/lib/emacs"
+            cask install
+            cask upgrade-cask
+        )
+        echo "*** Done with Emacs casks"
+    fi
+
     git config --global init.templatedir "$dir/lib/git_template"
     mkdir -p "$goodiesDir/fpath"
     ln -sf "$(brew --prefix)/Library/Contributions/brew_zsh_completion.zsh" "$goodiesDir/fpath/_brew"
@@ -62,11 +81,16 @@ doInstall() {
         files[${HOME}/.${n}]="$dir/${n}.zsh"
     done
     files[$emacsDir/init.el]="$dir/lib/emacsinit.el"
-    
+
     for f in ${(k)files[@]}; do
         if [[ -e "$f" ]]; then
-            echo "File $f exits"
-            exitingFiles=t
+            if [[ -L "$f" && $(readlink "$f") = "$files[$f]" ]]; then
+                echo "File already installed: $f -> $files[$f]"
+                unset "files[$f]"
+            else
+                echo "File exits: $f"
+                exitingFiles=t
+            fi
         fi
     done
     if [[ "$exitingFiles" = t ]] && [[ "$force" != t ]]; then
