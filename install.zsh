@@ -9,7 +9,7 @@ mkdir -p "$goodiesDir"
 mkdir -p "$emacsDir"
 
 local prog
-local neededProgs=(cask emacs emacsclient git)
+local neededProgs=(emacs emacsclient git)
 case "$OSTYPE" in
     (darwin*)
         neededProgs=(${neededProgs[@]} brew)
@@ -28,9 +28,6 @@ while [[ "$1" = -* ]]; do
     case $1 in
         (--create-init-file)
             createInitFile=t
-            ;;
-        (--skip-cask)
-            skipCask=1
             ;;
         (--force)
             force=t
@@ -61,17 +58,9 @@ _link() {
 }
 
 doInstall() {
-    ln -sf "$dir/thirdparty/cask/bin/cask" "$dir/bin/cask"
-
-    if [[ ""$skipCask"" != 1 ]]; then
-        echo "*** Installing/updating Emacs casks"
-        (
-            cd "$dir/lib/emacs"
-            cask install
-            cask upgrade-cask
-        )
-        echo "*** Done with Emacs casks"
-    fi
+    echo "*** Installing/updating Emacs packages"
+    emacs -nw --eval '(kill-emacs)'
+    echo "*** Done with Emacs"
 
     git config --global init.templatedir "$dir/lib/git_template"
     mkdir -p "$goodiesDir/fpath"

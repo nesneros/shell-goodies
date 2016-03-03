@@ -7,10 +7,8 @@
 ;;; (menu-bar-mode nil)                ; Disable menu bar
 (tool-bar-mode -1)                  ; No tool bar
 (auto-compression-mode 1)           ; Automatic open compressed files
-(setq compilation-scroll-output t)  ; Auto scroll *compilation* buffer
 (delete-selection-mode t)           ; Delete selection when typing (like most editors does)
 (setq vc-follow-symlinks t)         ; Automatically follow symlinks
-(setq tags-revert-without-query 1)  ; Automatically reload tags when file changed without prompting
 (setq split-height-threshold 80)    ; Give preference to horizontal window split
 (setq split-width-threshold nil)
 (savehist-mode 1)
@@ -19,32 +17,34 @@
 ;;; Key bindings. Emacs convention is that \C-c[a-zA-A] is reserve for user
 (global-set-key "\C-cf"              'ffap)         ; find file at point
 (global-set-key "\M-/"               'hippie-expand) ; replace std Emacs expand key
-(global-set-key "\M- "               'company-complete)
 (global-set-key "\C-x\C-b"           'ibuffer)   ; replaces std buffer list
-(global-set-key (kbd "C-c C-s")      'ag)
 (global-set-key (kbd "C-c l")        'toggle-flycheck-errors-window)
-(global-set-key (kbd "<M-s-up>")     'buf-move-up)
-(global-set-key (kbd "<M-s-down>")   'buf-move-down)
-(global-set-key (kbd "<M-s-left>")   'buf-move-left)
-(global-set-key (kbd "<M-s-right>")  'buf-move-right)
-(global-set-key (kbd "C-x o")        'ace-window)
-(global-set-key (kbd "C-x v p")      'git-messenger:popup-message)
 (global-set-key (kbd "s-w")          'delete-window)  ;; Cmd-W closes an  window, not the frame
 
 ;;; Customization placed in its own file. Create it if it doesn't exist
 (defconst custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file t t)
 
+;;; Install use-package if not yet installed
+(require 'package)
+(setq package-enable-at-startup nil)
+(add-to-list 'package-archives '("melpa"        . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
+(package-initialize)
+(unless (package-installed-p 'use-package)
+  (unless package-archive-contents (package-refresh-contents))
+  (package-install 'use-package))
+(eval-when-compile (require 'use-package))
+
+;;; Use use-package to extend use-package with the :chords keyword
+(use-package use-package-chords
+  :ensure t
+  :config (key-chord-mode 1))
+
+;; An idea: Could use load-file-name to locate shell goodies
 (let ((goodies-root (getenv "SHELL_GOODIES_ROOT")))
   (if goodies-root
       (progn
-        ;; Initialize cask
-        (let ((emacs-cask-project (expand-file-name "lib/emacs" goodies-root))
-              (cask-el "/usr/local/share/emacs/site-lisp/cask/cask.el"))
-          (unless (file-exists-p cask-el) (error "cask.el not found at '/usr/local/share/emacs/site-lisp/cask/cask.el'"))
-          (require 'cask cask-el)
-          (cask-initialize emacs-cask-project))
-
         ;; Load all files in .../lib/elisp.d
         (let ((lib-dir (expand-file-name "lib/elisp.d" goodies-root))
               (loaded (mapcar #'car load-history))) ; All loaded files. Don't load same file twice
@@ -71,52 +71,9 @@
 ;;; Customization of shell-script-mode
 (add-hook 'sh-mode-hook '(lambda () (modify-syntax-entry ?$ "w")))
 
-;;; Backup settings
-(let ((backup-dir (expand-file-name "backup" user-emacs-directory)))
-  (unless (file-directory-p backup-dir)
-    (make-directory backup-dir)
-    (set-file-modes backup-dir 448))
-
-  (setq make-backup-files t
-        delete-old-versions t
-        kept-old-versions 2
-        kept-new-versions 8
-        version-control t
-        backup-directory-alist `(("." . ,backup-dir))))
-
-;;; Visible mark settings. Must be set before package is loaded
-(defface visible-mark-active
-  '((((type tty) (class mono)))
-    (t (:background "magenta"))) "")
-(setq visible-mark-max 2)
-(setq visible-mark-faces `(visible-mark-face1 visible-mark-face2))
-
-;;; Tramp
-(require 'tramp)
-(setq tramp-default-method "scp")
-
-;;; Highlight matching parentheses next to cursor
-(require 'paren)
-(show-paren-mode t)
-
 ;; syntax highlight
 (global-font-lock-mode t)
-(add-hook 'font-lock-mode-hook
-          (lambda () (setq font-lock-maximum-decoration t)))
-
-;;; Hippie expand
-(require 'hippie-exp)
-(setq hippie-expand-try-functions-list
-      '(try-expand-dabbrev
-        try-expand-dabbrev-all-buffers
-        try-expand-dabbrev-from-kill
-        try-complete-file-name-partially
-        try-complete-file-name
-        try-expand-all-abbrevs
-        try-expand-list
-        try-expand-line
-        try-complete-lisp-symbol-partially
-        try-complete-lisp-symbol))
+(setq font-lock-maximum-decoration t)
 
 ;;; Git key bindings
 (defvar git-command-map (make-sparse-keymap))
@@ -136,47 +93,75 @@
 (define-key git-command-map (kbd "C-y") 'git-gutter+-stage-and-commit-whole-buffer)
 (define-key git-command-map (kbd "U") 'git-gutter+-unstage-whole-buffer)
 
-(defmacro for-package (package &rest body)
-  (if (package-installed-p (eval package))
-      (while body
-        (eval (pop body)))
-    (message "*** Package '%s' is not installed" (eval package))))
-(put 'for-package 'lisp-indent-function 1)
+;;; ace window
+(use-package ace-window
+  :ensure t
+  :bind ("C-x o" . ace-window))
 
-;;; Packages installed by the package management should not be used before the package management is initialized
+;;; ag (the silver searcher)
+(use-package ag
+  :ensure t
+  :config
+  (add-hook 'ag-mode-hook '(lambda () (define-key ag-mode-map (kbd "w") #'wgrep-change-to-wgrep-mode)))
+  :bind
+  ("C-c C-s" . ag))
+  ;;(:map ag-mode-map ("w" . wgrep-change-to-wgrep-mode)))
 
 ;;; Aggresive indent
-(for-package 'aggressive-indent
+(use-package aggressive-indent
+  :ensure t
+  :config
   (global-aggressive-indent-mode 1)
   ;; (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
-  (global-set-key (kbd "C-c ai") 'aggressive-indent-mode))
+  :bind ("C-c ai" . aggressive-indent-mode))
 
 ;;; Anzu
-(for-package 'anzu (global-anzu-mode 1))
+(use-package anzu
+  :ensure t
+  :config (global-anzu-mode 1))
 
-;;; Auto-complete
-(for-package 'auto-complete
-  (require 'fuzzy)
-  (ac-config-default)
-  ;; ac-source-filename has a require of 0. Remove it and use default value
-  (setq ac-source-filename (assq-delete-all 'require ac-source-filename))
-  (setq-default ac-sources (cons 'ac-source-filename ac-sources)))
+;;; buffer-move
+(use-package buffer-move
+  :ensure t
+  :bind
+  ("<M-s-up>"     . buf-move-up)
+  ("<M-s-down>"   . buf-move-down)
+  ("<M-s-left>"   . buf-move-left)
+  ("<M-s-right>"  . buf-move-right))
 
 ;;; Company
-(for-package 'company
-  (global-company-mode))
-(for-package 'company-shell
+(use-package company
+  :ensure t
+  :config
+  (global-company-mode)
+  :bind ("\M- " . company-complete))
+(use-package company-shell
+  :ensure t
+  :config
   (add-to-list 'company-backends 'company-shell)
   ;; company-files is part of backends, but doesn't seem to work when late in the list
   (setq company-backends (cons #'company-files company-backends)))
-(for-package 'company-flx (company-flx-mode +1))
-(for-package 'company-quickhelp (company-quickhelp-mode 1))
+(use-package "company-flx" :ensure t :config (company-flx-mode +1))
+(use-package "company-quickhelp" :ensure t :config (company-quickhelp-mode 1))
+
+(use-package compile
+  :config
+  (setq compilation-scroll-output t))
 
 ;;; Dash
-(eval-after-load "dash" '(dash-enable-font-lock))
+(use-package dash
+  :config
+  (dash-enable-font-lock))
+
+;;; etags
+(use-package etags
+  :config
+  (setq tags-revert-without-query t))
 
 ;;; Flycheck
-(for-package 'flycheck
+(use-package flycheck
+  :ensure t
+  :config
   (add-hook 'flycheck-error-list-after-refresh-hook
             '(lambda () (-when-let (window (flycheck-get-error-list-window t))
                           (with-selected-window window
@@ -185,92 +170,170 @@
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
 ;;; Flyspell
-(eval-after-load "flyspell"
+(eval-after-load 'flyspell
   '(progn
      (add-hook 'text-mode-hook 'flyspell-mode)
      (define-key flyspell-mouse-map [down-mouse-3] #'flyspell-correct-word)
      (define-key flyspell-mouse-map [mouse-3] #'undefined)))
 
 ;;; git-gutter+
-(for-package 'git-gutter+ (global-git-gutter+-mode +1))
+(use-package git-gutter+
+  :ensure t
+  :config (global-git-gutter+-mode +1))
+
+;;; git-messenger
+(use-package git-messenger
+  :ensure t
+  :config (setq git-messenger:show-detail t)
+  :bind
+  (("C-c v p" . git-messenger:popup-message)
+   :map git-command-map
+   ("m" . git-messenger:popup-message))
+  )
+
+;;; Hippie expand
+(use-package hippie-exp
+  :config
+  (setq hippie-expand-try-functions-list
+        '(try-expand-dabbrev
+          try-expand-dabbrev-all-buffers
+          try-expand-dabbrev-from-kill
+          try-complete-file-name-partially
+          try-complete-file-name
+          try-expand-all-abbrevs
+          try-expand-list
+          try-expand-line
+          try-complete-lisp-symbol-partially
+          try-complete-lisp-symbol)))
 
 ;;; Ido
-(require 'ido)
-(ido-mode 1)
-(ido-everywhere 1)
-(setq ido-enable-flex-matching t
-      ido-use-virtual-buffers t)
-(for-package 'ido-at-point
-  (ido-at-point-mode))
-(for-package 'ido-ubiquitous
+(use-package ido
+  :config
+  (ido-mode 1)
+  (ido-everywhere 1)
+  (setq ido-enable-flex-matching t
+        ido-use-virtual-buffers t))
+(use-package "ido-at-point"
+  :ensure t
+  :init (ido-at-point-mode))
+(use-package "ido-ubiquitous"
+  :ensure t
+  :init
   (ido-ubiquitous-mode 1))
 
 ;;; Mark down
-(for-package 'markdown-mode
+(use-package markdown-mode
+  :ensure t
+  :config
   (add-hook 'markdown-mode-hook
             (lambda ()
               (setq markdown-command "pandoc --smart -f markdown -t html")
               (visual-line-mode t)
-              (for-package 'writegood-mode (writegood-mode t))
+              (use-package "writegood-mode" :ensure t :init (writegood-mode t))
               (flyspell-mode t))))
 
 ;;; Magit
-(for-package 'magit
-  (global-set-key (kbd "C-x g") 'magit-status)
+(use-package magit
+  :ensure t ;; :pin melpa-stable ;; magit is in stable, but its dependencies isn't :-(
+  :commands ido-enter-magit-status
+  :bind ("C-x g" . magit-status)
+  :config
   (setq magit-completing-read-function 'magit-ido-completing-read)
-  (autoload 'ido-enter-magit-status "magit.el")
   (add-hook 'ido-setup-hook
             (lambda ()
               (define-key ido-completion-map
                 (kbd "C-x g") 'ido-enter-magit-status))))
 
 ;;; Multiple cursors
-(for-package 'multiple-cursors
-  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
+(use-package multiple-cursors
+  :ensure t
+  :bind
+  ("C-S-c C-S-c" . mc/edit-lines)
+  ("C->" . mc/mark-next-like-this)
+  ("C-<" . mc/mark-previous-like-this)
+  ("C-c C-<" . mc/mark-all-like-this))
+
+;;; parens - Highlight matching parentheses next to cursor
+(use-package paren
+  :config
+  (show-paren-mode t))
+
+;;; Popwin
+(use-package popwin
+  :defer
+  :config
+  (require 'popwin)
+  (popwin-mode 1))
 
 ;;; Projectile
-(for-package 'projectile
+(use-package projectile
+  :ensure t
+  :config
   (global-set-key (kbd "s-p") 'projectile-command-map)
   (setq projectile-tags-file-name ".tags")
   (projectile-global-mode))
 
 ;;; Project Explorer
-(for-package 'project-explorer
-  (define-key projectile-command-map (kbd "s-p") 'project-explorer-toggle))
+(use-package project-explorer
+  :ensure t
+  :bind (:map projectile-command-map ("s-p" . project-explorer-toggle)))
 
 ;;; Rainbow Delimiters
-(for-package 'rainbow-delimiters (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+(use-package rainbow-delimiters
+  :ensure t
+  :config (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 ;;; Smart mode line
-(for-package 'smart-mode-line
+(use-package smart-mode-line
+  :ensure t
+  :config
   (sml/setup)
   ;; Rich Minority - package loaded by smart-mode-line
+  (require 'cl)
   (setq rm-blacklist (cl-list* " Anzu" " ARev" " company" " GitGutter" rm-blacklist)))
 
 ;;; Smartparens
-; not compatible with delete-selection-mode. Electric pair mode seems to work better
-(for-package 'smartparens
+;; not compatible with delete-selection-mode. Electric pair mode seems to work better
+(use-package smartparens
+  :config
   ;;(require 'smartparens-config)
   (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
   (add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
   (show-smartparens-global-mode 1))
 
 ;;; smex
-(for-package 'smex
+(use-package smex
+  :ensure t
+  :config
   (smex-initialize)
-  (global-set-key (kbd "M-x") 'smex)
-  (global-set-key (kbd "M-X") 'smex-major-mode-commands))
+  :bind
+  ("M-x" . smex)
+  ("M-X" . smex-major-mode-commands))
+
+;;; Tramp
+(use-package tramp
+  :config
+  (setq tramp-default-method "scp"))
 
 ;;; Visible mark
-(for-package 'visible-mark (global-visible-mark-mode 1))
-;; Face to use for mark is configured before loading package
+(use-package visible-mark
+  :ensure t
+  :init
+  (defface visible-mark-active
+    '((((type tty) (class mono)))
+      (t (:background "magenta"))) "")
+  :config
+  (setq visible-mark-max 2)
+  (setq visible-mark-faces `(visible-mark-face1 visible-mark-face2))
+  (global-visible-mark-mode 1))
 
 ;;; wgrep - write to files in search result buffer
-(for-package 'wgrep
-  (setq wgrep-enable-key "w")
+(use-package wgrep
+  :ensure t
+  :commands wgrep-change-to-wgrep-mode
+  :defer
+  :init
+  (setq wgrep-enable-key "w") ;; seems not to work for ag mode
   (setq wgrep-auto-save-buffer t))
 
 ;;; IBuffer
