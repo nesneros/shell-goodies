@@ -16,7 +16,6 @@
 
 ;;; Key bindings. Emacs convention is that \C-c[a-zA-A] is reserve for user
 (global-set-key "\C-cf"              'ffap)         ; find file at point
-(global-set-key "\M-/"               'hippie-expand) ; replace std Emacs expand key
 (global-set-key "\C-x\C-b"           'ibuffer)   ; replaces std buffer list
 (global-set-key (kbd "C-c l")        'toggle-flycheck-errors-window)
 (global-set-key (kbd "s-w")          'delete-window)  ;; Cmd-W closes an  window, not the frame
@@ -193,6 +192,7 @@
 
 ;;; Hippie expand
 (use-package hippie-exp
+  :bind ("M-/" . hippie-expand) ; replace std Emacs expand key
   :config
   (setq hippie-expand-try-functions-list
         '(try-expand-dabbrev
