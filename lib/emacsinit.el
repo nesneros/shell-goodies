@@ -328,13 +328,13 @@
   (global-visible-mark-mode 1))
 
 ;;; wgrep - write to files in search result buffer
-(use-package wgrep
+(use-package wgrep-ag
   :ensure t
   :commands wgrep-change-to-wgrep-mode
-  :defer
   :init
-  (setq wgrep-enable-key "w") ;; seems not to work for ag mode
+  (setq wgrep-enable-key "w")
   (setq wgrep-auto-save-buffer t))
+
 
 ;;; IBuffer
 (autoload 'ibuffer "ibuffer" "List buffers." t)
