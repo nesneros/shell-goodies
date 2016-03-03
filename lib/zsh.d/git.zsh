@@ -20,6 +20,7 @@ if zstyle -m ':shell-goodies:dvcs:git' clonedir '*'; then
         cd "$clonedir"
         git clone $url
         cd ${url:t:r}
+        [[ -x .git/hooks/ctags.sh ]] && .git/hooks/ctags.sh
     }
     alias -s git=_git_clone
 fi
