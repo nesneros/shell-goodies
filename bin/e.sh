@@ -4,17 +4,23 @@ set -e
 while [[ "$1" = -* ]] ; do
     case "$1" in
         (--git)
-            d=$(realpath "${2:-.}")
-            cd "$d"
-            root="$(git rev-parse --show-toplevel 2> /dev/null)"
-            [[ -z "$root" ]] && echo "No git repo in $d" && exit 5
-            cmd=(--eval "(magit-status \"$root\")")
+            # Open magit status on the specified path, or if none on the cwd.
+            git=t
             ;;
-        (--kill)
-            cmd=(--eval "(kill-emacs)")
+        (-x|--kill)
+            # Kill the server (if it exist).
+            # If more arguments specified start a new server and client.
+            emacsclient --eval "(kill-emacs)" 2>/dev/null
+            noDefaultArg=t
             ;;
-        (-x|--restart)
-            emacsclient --alternate-editor '' --eval "(kill-emacs)"
+        (-t|--tty)
+            # Create client in the terminal,
+            tty=t
+            ;;
+        (-U|--update-packages)
+            # Upgrade installed packages
+            emacsclient --alternate-editor '' --eval "(package-utils-upgrade-all)"
+            noDefaultArg=t
             ;;
         (--)
             shift
@@ -24,10 +30,27 @@ while [[ "$1" = -* ]] ; do
     shift
 done
 
-[[ -z "$cmd" ]] && cmd=("$@")
-[[ -z "$cmd" ]] && cmd=(.)
+if [[ "$git" ]]; then
+    d=$(realpath "${2:-.}")
+    shift
+    cd "$d"
+    root="$(git rev-parse --show-toplevel 2> /dev/null)"
+    [[ -z "$root" ]] && echo "No git repo in $d" && exit 5
+    cmd=(--eval "(magit-status \"$root\")")
+fi
 
-# See http://www.gnu.org/software/emacs/manual/html_mono/elisp.html#Frames for meaning of 'ns 
-x=$(emacsclient --alternate-editor '' --eval "(member 'ns (mapcar 'framep (frame-list)))" 2>/dev/null)
-[[ -z "$x" || "$x" = 'nil' ]] && cmd=(--create-frame ${cmd[@]})
-emacsclient --no-wait "${cmd[@]}" >/dev/null
+cmd=(${cmd[0]} "$@")
+
+if [[ ${#@} -eq 0 ]]; then
+    [[ "$noDefaultArg" = t ]] && exit 0
+    [[ "${#cmd}" -ne 0 ]] && cmd=(.)
+fi
+
+if [[ "$tty" = t ]]; then
+    cmd=(--tty ${cmd[@]})
+else
+    hasFrame=$(emacsclient --eval "(member 'ns (mapcar 'framep (frame-list)))" 2>/dev/null) || :
+    [[ -z "$hasFrame" || "$hasFrame" = 'nil' ]] && cmd=(--create-frame ${cmd[@]})
+fi
+
+emacsclient --alternate-editor '' --no-wait "${cmd[@]}" 2>/dev/null
