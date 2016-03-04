@@ -174,11 +174,12 @@
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
 ;;; Flyspell
-(eval-after-load 'flyspell
-  '(progn
-     (add-hook 'text-mode-hook 'flyspell-mode)
-     (define-key flyspell-mouse-map [down-mouse-3] #'flyspell-correct-word)
-     (define-key flyspell-mouse-map [mouse-3] #'undefined)))
+(use-package flyspell
+  :config
+  (add-hook 'text-mode-hook 'flyspell-mode)
+  :bind (:map flyspell-mouse-map
+              ([down-mouse-3] . flyspell-correct-word)
+              ([mouse-3] . undefined)))
 
 ;;; git-gutter+
 (use-package git-gutter+
