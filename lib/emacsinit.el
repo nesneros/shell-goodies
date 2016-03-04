@@ -192,8 +192,10 @@
   :bind
   (("C-c v p" . git-messenger:popup-message)
    :map git-command-map
-   ("m" . git-messenger:popup-message))
-  )
+   ("m" . git-messenger:popup-message)))
+
+;;; git-modes - ignore, config, attributes
+(use-package gitignore-mode :ensure t)
 
 ;;; Hippie expand
 (use-package hippie-exp
