@@ -40,6 +40,11 @@
   :ensure t
   :config (key-chord-mode 1))
 
+;;; package-utils used to to automatically package update
+(use-package package-utils
+  :ensure t
+  :commands package-utils-upgrade-all)
+
 ;; An idea: Could use load-file-name to locate shell goodies
 (let ((goodies-root (getenv "SHELL_GOODIES_ROOT")))
   (if goodies-root

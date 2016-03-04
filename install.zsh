@@ -59,7 +59,7 @@ _link() {
 
 doInstall() {
     echo "*** Installing/updating Emacs packages"
-    emacs -nw --eval '(kill-emacs)'
+    emacs -batch -u "$USER" -f package-utils-upgrade-all -kill
     echo "*** Done with Emacs"
 
     git config --global init.templatedir "$dir/lib/git_template"
