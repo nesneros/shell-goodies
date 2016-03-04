@@ -136,9 +136,8 @@
 ;;; Company
 (use-package company
   :ensure t
-  :config
-  (global-company-mode)
-  :bind ("\M- " . company-complete))
+  :bind ("M-SPC" . company-complete)
+  :config (global-company-mode))
 (use-package company-shell
   :ensure t
   :config
