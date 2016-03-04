@@ -43,7 +43,7 @@ cmd=(${cmd[0]} "$@")
 
 if [[ ${#@} -eq 0 ]]; then
     [[ "$noDefaultArg" = t ]] && exit 0
-    [[ "${#cmd}" -ne 0 ]] && cmd=(.)
+    [[ "${#cmd}" -eq 0 ]] && cmd=(.)
 fi
 
 if [[ "$tty" = t ]]; then
@@ -51,6 +51,7 @@ if [[ "$tty" = t ]]; then
 else
     hasFrame=$(emacsclient --eval "(member 'ns (mapcar 'framep (frame-list)))" 2>/dev/null) || :
     [[ -z "$hasFrame" || "$hasFrame" = 'nil' ]] && cmd=(--create-frame ${cmd[@]})
+    cmd=(--no-wait ${cmd[@]})
 fi
 
-emacsclient --alternate-editor '' --no-wait "${cmd[@]}" 2>/dev/null
+emacsclient --alternate-editor '' "${cmd[@]}" 2>/dev/null
