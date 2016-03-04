@@ -267,7 +267,6 @@
 
 ;;; Popwin
 (use-package popwin
-  :defer
   :config
   (require 'popwin)
   (popwin-mode 1))
@@ -275,8 +274,8 @@
 ;;; Projectile
 (use-package projectile
   :ensure t
+  :bind-keymap ("s-p" . projectile-command-map)
   :config
-  (global-set-key (kbd "s-p") 'projectile-command-map)
   (setq projectile-tags-file-name ".tags")
   (projectile-global-mode))
 
