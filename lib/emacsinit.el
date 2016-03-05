@@ -274,6 +274,7 @@
 ;;; Projectile
 (use-package projectile
   :ensure t
+  :demand t
   :bind-keymap ("s-p" . projectile-command-map)
   :config
   (setq projectile-tags-file-name ".tags")
