@@ -299,15 +299,6 @@
   (require 'cl)
   (setq rm-blacklist (cl-list* " Anzu" " ARev" " company" " GitGutter" rm-blacklist)))
 
-;;; Smartparens
-;; not compatible with delete-selection-mode. Electric pair mode seems to work better
-(use-package smartparens
-  :config
-  ;;(require 'smartparens-config)
-  (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
-  (add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
-  (show-smartparens-global-mode 1))
-
 ;;; smex
 (use-package smex
   :ensure t
