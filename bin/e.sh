@@ -7,6 +7,9 @@ while [[ "$1" = -* ]] ; do
             # Open magit status on the specified path, or if none on the cwd.
             git=t
             ;;
+        (-n|--new-frame)
+            hasFrame=nil # Indicate no frame, so a new is created
+            ;;
         (-x|--kill)
             # Kill the server (if it exist).
             # If more arguments specified start a new server and client.
@@ -49,7 +52,9 @@ fi
 if [[ "$tty" = t ]]; then
     cmd=(--tty ${cmd[@]})
 else
-    hasFrame=$(emacsclient --eval "(member 'ns (mapcar 'framep (frame-list)))" 2>/dev/null) || :
+    if [[ -z "$hasFrame" ]]; then
+        hasFrame=$(emacsclient --eval "(member 'ns (mapcar 'framep (frame-list)))" 2>/dev/null) || :
+    fi
     [[ -z "$hasFrame" || "$hasFrame" = 'nil' ]] && cmd=(--create-frame ${cmd[@]})
     cmd=(--no-wait ${cmd[@]})
 fi
