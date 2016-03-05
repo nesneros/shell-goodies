@@ -53,7 +53,7 @@
         (let ((lib-dir (expand-file-name "lib/elisp.d" goodies-root))
               (loaded (mapcar #'car load-history))) ; All loaded files. Don't load same file twice
           (dolist (file (directory-files lib-dir t ".+\\.elc?$"))
-            (unless (member file loaded)
+            (when (and (not (member file loaded)) (file-exists-p file))
               (load (file-name-sans-extension file))
               (push file loaded)))))
     (message "SHELL_GOODIES_ROOT not defined. Limited functionality")))
