@@ -289,20 +289,10 @@
   (setq projectile-tags-file-name ".tags")
   (projectile-global-mode))
 
-;;; Neotree
-(use-package neotree
+;;; Project Explorer
+(use-package project-explorer
   :ensure t
-  :bind
-  (("C-c e" . neotree-toggle)
-   :map neotree-mode-map
-   ("e" . goodies:use-projectile-root))
-  :config
-  (setq projectile-switch-project-action 'neotree-projectile-action)
-  (setq neo-vc-integration nil))
-
-(defun goodies:use-projectile-root ()
-  (interactive)
-  (neo-global--open-dir (projectile-project-root)))
+  :bind (:map projectile-command-map ("s-p" . project-explorer-toggle)))
 
 ;;; Rainbow Delimiters
 (use-package rainbow-delimiters
