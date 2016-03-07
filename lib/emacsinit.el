@@ -69,6 +69,13 @@
           (split-window nil -5 'below)
           (list-flycheck-errors))))))
 
+;;; Set size of new frames
+(defun goodies:set-frame-size(the-frame)
+  (let* ((width 800)
+         (height (- (x-display-pixel-height) 200)))
+    (set-frame-size the-frame width height 'in-pixels)))
+(add-to-list 'after-make-frame-functions #'goodies:set-frame-size)
+
 ;;; Some mode mappings
 (add-to-list 'auto-mode-alist '("\\.zsh\\(-theme\\)?\\'" . shell-script-mode))
 
