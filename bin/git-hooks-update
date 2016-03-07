@@ -3,16 +3,6 @@ set -e
 
 [[ "$1" = '--submodules' ]] && shift && submodules=t
 
-while [[ "$1" = -* ]]; do
-    case "$1" in
-        (--submodules)
-            shift
-            ;;
-        (*)
-            ;;
-    esac
-done
-
 suffix="$(date +%Y%m%d-%H%M%S)"
 
 dir=${1:-$PWD}
