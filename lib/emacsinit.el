@@ -164,6 +164,12 @@
   :config
   (dash-enable-font-lock))
 
+;;; Direx
+;; (use-package direx
+;;   :ensure t
+;;   :demand t
+;;   :bind ("C-x C-j" . direx:jump-to-directory))
+
 ;;; etags
 (use-package etags
   :config
