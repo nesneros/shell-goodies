@@ -274,10 +274,11 @@
   (show-paren-mode t))
 
 ;;; Popwin
-(use-package popwin
-  :config
-  (require 'popwin)
-  (popwin-mode 1))
+;; (use-package popwin
+;;   :disabled
+;;   :ensure t
+;;   :config
+;;   (popwin-mode 1))
 
 ;;; Projectile
 (use-package projectile
@@ -288,10 +289,20 @@
   (setq projectile-tags-file-name ".tags")
   (projectile-global-mode))
 
-;;; Project Explorer
-(use-package project-explorer
+;;; Neotree
+(use-package neotree
   :ensure t
-  :bind (:map projectile-command-map ("s-p" . project-explorer-toggle)))
+  :bind
+  (("C-c e" . neotree-toggle)
+   :map neotree-mode-map
+   ("e" . goodies:use-projectile-root))
+  :config
+  (setq projectile-switch-project-action 'neotree-projectile-action)
+  (setq neo-vc-integration nil))
+
+(defun goodies:use-projectile-root ()
+  (interactive)
+  (neo-global--open-dir (projectile-project-root)))
 
 ;;; Rainbow Delimiters
 (use-package rainbow-delimiters
