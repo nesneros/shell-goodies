@@ -58,10 +58,6 @@ _link() {
 }
 
 doInstall() {
-    echo "*** Installing/updating Emacs packages"
-    emacs -batch -u "$USER" -f package-utils-upgrade-all -kill
-    echo "*** Done with Emacs"
-
     git config --global init.templatedir "$dir/lib/git_template"
     mkdir -p "$goodiesDir/fpath"
     ln -sf "$(brew --prefix)/Library/Contributions/brew_zsh_completion.zsh" "$goodiesDir/fpath/_brew"
@@ -89,6 +85,10 @@ doInstall() {
             _link "$files[$f]" "$f"
         done
     fi
+
+    echo "*** Installing/updating Emacs packages"
+    emacs —-batch —-user “$USER” -f package-utils-upgrade-all -kill
+    echo "*** Done with Emacs"
 }
 
 if [[ "$1" = 'doIt' ]]; then
