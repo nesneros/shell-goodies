@@ -87,7 +87,7 @@ doInstall() {
     fi
 
     echo "*** Installing/updating Emacs packages"
-    emacs —-batch —-user “$USER” -f package-utils-upgrade-all -kill
+    emacs -batch -user "$USER" -f package-utils-upgrade-all -kill
     echo "*** Done with Emacs"
 }
 

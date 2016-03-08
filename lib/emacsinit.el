@@ -45,6 +45,8 @@
   :ensure t
   :commands package-utils-upgrade-all)
 
+(use-package dash :ensure t)
+
 ;; An idea: Could use load-file-name to locate shell goodies
 (let ((goodies-root (getenv "SHELL_GOODIES_ROOT")))
   (if goodies-root
