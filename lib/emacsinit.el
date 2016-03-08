@@ -144,8 +144,13 @@
 ;;; Company
 (use-package company
   :ensure t
-  :bind ("M-SPC" . company-complete)
-  :config (global-company-mode))
+  :bind (("M-SPC" . company-complete)
+         :map company-active-map
+         ("M-ESC" . company-abort)
+         ("M-RET" . company-complete-selection))
+  :config
+  (setq company-auto-complete 'company-explicit-action-p)
+  (global-company-mode))
 (use-package company-shell
   :ensure t
   :config
