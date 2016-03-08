@@ -61,4 +61,4 @@ else
     cmd=(--no-wait "${cmd[@]}")
 fi
 
-emacsclient --alternate-editor '' "${cmd[@]}" 2>/dev/null
+emacsclient --alternate-editor '' "${cmd[@]}" &>/dev/null
