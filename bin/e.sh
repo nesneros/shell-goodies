@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 set -e
 
+declare -a cmd
+
 while [[ "$1" = -* ]] ; do
     case "$1" in
         (--git)
@@ -33,16 +35,16 @@ while [[ "$1" = -* ]] ; do
     shift
 done
 
-if [[ "$git" ]]; then
+if [[ "$git" = t ]]; then
     d=$(realpath "${2:-.}")
-    shift
+    shift || true
     cd "$d"
     root="$(git rev-parse --show-toplevel 2> /dev/null)"
     [[ -z "$root" ]] && echo "No git repo in $d" && exit 5
     cmd=(--eval "(magit-status \"$root\")")
 fi
 
-cmd=(${cmd[0]} "$@")
+cmd=("${cmd[@]}" "$@")
 
 if [[ ${#@} -eq 0 ]]; then
     [[ "$noDefaultArg" = t ]] && exit 0
@@ -56,7 +58,7 @@ else
         hasFrame=$(emacsclient --eval "(member 'ns (mapcar 'framep (frame-list)))" 2>/dev/null) || :
     fi
     [[ -z "$hasFrame" || "$hasFrame" = 'nil' ]] && cmd=(--create-frame ${cmd[@]})
-    cmd=(--no-wait ${cmd[@]})
+    cmd=(--no-wait "${cmd[@]}")
 fi
 
 emacsclient --alternate-editor '' "${cmd[@]}" 2>/dev/null
