@@ -4,8 +4,8 @@
 (setq-default indent-tabs-mode nil) ; default to indent with spaces
 (fset 'yes-or-no-p 'y-or-n-p)       ; will allow you to type just "y" instead of "yes" when you exit
 (setq next-line-add-newlines nil)   ; will disallow creation of new lines with "down key" at end of buffer
-;;; (menu-bar-mode nil)                ; Disable menu bar
-(tool-bar-mode -1)                  ; No tool bar
+;; (menu-bar-mode nil)                ; Disable menu bar
+(when (fboundp  'tool-bar-mode) (tool-bar-mode -1))  ; No tool bar
 (auto-compression-mode 1)           ; Automatic open compressed files
 (delete-selection-mode t)           ; Delete selection when typing (like most editors does)
 (setq vc-follow-symlinks t)         ; Automatically follow symlinks
