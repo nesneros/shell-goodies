@@ -242,6 +242,10 @@
   :init
   (ido-ubiquitous-mode 1))
 
+;;; Key :chord
+(use-package key-chord
+  :ensure t)
+
 ;;; Mark down
 (use-package markdown-mode
   :ensure t
