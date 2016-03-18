@@ -54,8 +54,13 @@ fi
 if [[ "$tty" = t ]]; then
     cmd=(--tty ${cmd[@]})
 else
+    case "$OSTYPE" in
+        (darwin*)   frame="'ns" ;;
+        (linux-gnu) frame="'x" ;;
+        (*)         frame="'unknown" ;;
+    esac
     if [[ -z "$hasFrame" ]]; then
-        hasFrame=$(emacsclient --eval "(member 'ns (mapcar 'framep (frame-list)))" 2>/dev/null) || :
+        hasFrame=$(emacsclient --eval "(member $frame (mapcar 'framep (frame-list)))" 2>/dev/null) || :
     fi
     [[ -z "$hasFrame" || "$hasFrame" = 'nil' ]] && cmd=(--create-frame ${cmd[@]})
     cmd=(--no-wait "${cmd[@]}")
