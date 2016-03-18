@@ -60,7 +60,7 @@ _link() {
 doInstall() {
     git config --global init.templatedir "$dir/lib/git_template"
     mkdir -p "$goodiesDir/fpath"
-    if [[ type brew >/dev/null ]] ; then
+    if type brew >/dev/null ; then
         ln -sf "$(brew --prefix)/Library/Contributions/brew_zsh_completion.zsh" "$goodiesDir/fpath/_brew"
     fi
     local -A files
