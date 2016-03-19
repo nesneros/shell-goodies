@@ -14,18 +14,17 @@ unset goodiesInitFile
 
 osTag=unknown
 case $OSTYPE in
-    (darwin*)
-        osTag=darwin
-        ;;
+    (darwin*)   osTag=darwin ;;
+    (linux-gnu) osTag=linux ;;
 esac
 
 zstyle -s ':shell-goodies:init' dir d
 for f in ${SHELL_GOODIES_ROOT}/lib/zsh.d/{,$osTag/}*.zsh(N) ${d:-/somethingThatDoesNotExist}/*.zsh(N); do
     goodies:source $f
-done 
+done
 unset d osTag
 
-### k 
+### k
 goodies:source "${SHELL_GOODIES_ROOT}/thirdparty/k/k.sh"
 
 ### zaw
