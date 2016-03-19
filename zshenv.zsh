@@ -43,6 +43,14 @@ if [[ "$OSTYPE" = "darwin"* ]]; then
     fi
 fi
 
+# For Debian/Ubuntu set JAVA_HOME
+if [[ -z "$JAVA_HOME" ]] && type update-alternatives >/dev/null ; then
+    javaBin=$(update-alternatives --query java 2>/dev/null | grep "^Value: " | cut -f2 -d' ')
+    if [[ -n "$javaBin" ]] ; then
+        export JAVA_HOME=${javaBin:h:h:h}
+    fi
+fi
+
 goodies:prezto_source zshenv
 
 typeset -U path
