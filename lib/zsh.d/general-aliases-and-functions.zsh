@@ -33,7 +33,6 @@ alias -g S='|sort'
 alias md='mkdir -p'
 compdef md=mkdir
 alias h='history -f 1 | less +G'
-alias top='sudo htop'
 
 alias+ du -h
 alias+ df -h
