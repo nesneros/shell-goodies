@@ -7,7 +7,9 @@ set -e
 # Caps Lock: Control if pressed with other key, if only key tapped it is escape
 
 if type xcape >/dev/null ; then
-    setxkbmap -option 'caps:swapescape'
+    # Kill any xcape that might be running
+    killall xcape 2>/dev/null ||:
+    setxkbmap -option 'caps:swapescape' -option 'shift:both_capslock'
     spare_modifier=Hyper_L
     xmodmap -e "keycode 66 = $spare_modifier"
     xmodmap -e "remove mod4 = $spare_modifier"
