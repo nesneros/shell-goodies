@@ -1,6 +1,8 @@
-#! /bin/sh
-sleep 2
+#! /bin/bash
 set -e
+
+pause="$1"
+[[ -n "$pause" ]] && sleep "$pause"
 
 # Remap keys.
 # Escape: Caps Lock
