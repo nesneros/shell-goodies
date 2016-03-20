@@ -1,5 +1,7 @@
 alias e=e.sh
 alias egit='e.sh --git'
+alias se='e.sh --su'
+
 export EDITOR=e.sh
 export VISUAL=$EDITOR    
 

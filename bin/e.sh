@@ -18,6 +18,10 @@ while [[ "$1" = -* ]] ; do
             emacsclient --eval "(kill-emacs)" 2>/dev/null
             noDefaultArg=t
             ;;
+        (-s|--su)
+            # Open file with tramp/sudo
+            sudo=t
+            ;;
         (-t|--tty)
             # Create client in the terminal,
             tty=t
@@ -42,6 +46,10 @@ if [[ "$git" = t ]]; then
     root="$(git rev-parse --show-toplevel 2> /dev/null)"
     [[ -z "$root" ]] && echo "No git repo in $d" && exit 5
     cmd=(--eval "(magit-status \"$root\")")
+elif [[ "$sudo" = t ]]; then
+    if [[ "${#@}" -eq 1 ]]; then
+        set "/sudo:root@localhost:$(realpath "$1")" 
+    fi
 fi
 
 cmd=("${cmd[@]}" "$@")
@@ -60,7 +68,7 @@ else
         (*)         frame="'unknown" ;;
     esac
     if [[ -z "$hasFrame" ]]; then
-        hasFrame=$(emacsclient --eval "(member $frame (mapcar 'framep (frame-list)))" 2>/dev/null) || :
+        hasFrame=$(emacsclient --alternate-editor '' --eval "(member $frame (mapcar 'framep (frame-list)))" 2>/dev/null) ||:
     fi
     [[ -z "$hasFrame" || "$hasFrame" = 'nil' ]] && cmd=(--create-frame ${cmd[@]})
     cmd=(--no-wait "${cmd[@]}")
