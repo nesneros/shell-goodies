@@ -30,6 +30,9 @@ alias -g T='|tail -100f'
 alias -g G='|grep --ignore-case -E'
 alias -g S='|sort'
 
+alias -g '^^'="*(.om[1])" # Newest file
+alias -g 'D^^'="~/Downloads/*(.om[1])" # Newest file
+
 alias md='mkdir -p'
 compdef md=mkdir
 alias h='history -f 1 | less +G'
