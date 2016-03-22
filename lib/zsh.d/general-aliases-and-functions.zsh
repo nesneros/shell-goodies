@@ -160,6 +160,10 @@ urlencode() {
     print "${${(j: :)@}//(#b)(?)/%$[[##16]##${match[1]}]}"
 }
 
+google() {
+    xdg-open "http://www.google.com/search?q=${(j:%20:)@}"
+}
+
 case "$OSTYPE" in
     (darwin*) alias o="open" ;;
     (linux-gnu) alias o="xdg-open &>/dev/null" ;;
