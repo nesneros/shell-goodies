@@ -1,6 +1,30 @@
 #! /usr/bin/env bash
 set -e
 
+# Function to call ctags/etags
+gentags() {
+    local exuberant # Set to t if we have exuberant ctags
+    local file="$1"
+    local root="$2"
+    local cmd=etags
+    # Preference is to exuberant ctags, then ctags, and finally etags
+    if type ctags-exuberant ; then 
+        cmd=ctags-exuberant
+        exuberant=t
+    elif type ctags >/dev/null ; then
+        cmd=ctags
+        # Check is ctags is exuberant
+        ctags --version | head -n 1 | grep --silent --ignore-case excuberant && exuberant=t
+    fi
+    local a
+    if [[ "$exuberant" = t ]] ; then
+        a=(-e --tag-relative -L - -f"$file" --languages=-Vera,REXX)
+    else
+        a=(-o "$file" -)
+    fi
+    git ls-files | grep "^$root" | "$cmd" "${a[@]}"
+}
+
 scriptDir=$(dirname "$0")
 topLevelDir=$(git -C "$scriptDir" rev-parse --show-toplevel)
 gitDir="$(git -C "$scriptDir" rev-parse --git-dir)"
