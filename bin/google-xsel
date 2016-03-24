@@ -1,0 +1,4 @@
+#! /usr/bin/env bash
+set -e
+
+xdg-open https://www.google.com/search?q=$(xsel)
