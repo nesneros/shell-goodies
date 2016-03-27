@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
 set -e
 
-xdg-open https://www.google.com/search?q=$(xsel)
+selection=$(xsel)
+[[ -n "$selection" ]] && xdg-open https://www.google.com/search?q=$selection
