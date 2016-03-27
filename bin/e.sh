@@ -2,6 +2,7 @@
 set -e
 
 declare -a cmd
+noWait='--no-wait'
 
 while [[ "$1" = -* ]] ; do
     case "$1" in
@@ -30,6 +31,9 @@ while [[ "$1" = -* ]] ; do
             # Upgrade installed packages
             emacsclient --alternate-editor '' --eval "(package-utils-upgrade-all)"
             noDefaultArg=t
+            ;;
+        (--wait)
+            noWait=
             ;;
         (--)
             shift
@@ -71,7 +75,7 @@ else
         hasFrame=$(emacsclient --alternate-editor '' --eval "(member $frame (mapcar 'framep (frame-list)))" 2>/dev/null) ||:
     fi
     [[ -z "$hasFrame" || "$hasFrame" = 'nil' ]] && cmd=(--create-frame ${cmd[@]})
-    cmd=(--no-wait "${cmd[@]}")
+    cmd=($noWait "${cmd[@]}")
 fi
 
 emacsclient --alternate-editor '' "${cmd[@]}" &>/dev/null
