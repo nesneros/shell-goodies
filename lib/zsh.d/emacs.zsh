@@ -1,6 +1,6 @@
-alias e=e.sh
-alias egit='e.sh --git'
-alias se='e.sh --su'
+alias e="e.sh --no-wait"
+alias egit='e --git'
+alias se='e --su'
 
 export EDITOR=e.sh
 export VISUAL=$EDITOR    

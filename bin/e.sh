@@ -2,7 +2,6 @@
 set -e
 
 declare -a cmd
-noWait='--no-wait'
 
 while [[ "$1" = -* ]] ; do
     case "$1" in
@@ -32,13 +31,13 @@ while [[ "$1" = -* ]] ; do
             emacsclient --alternate-editor '' --eval "(package-utils-upgrade-all)"
             noDefaultArg=t
             ;;
-        (--wait)
-            noWait=
-            ;;
+        (--no-wait)
+        noWait='--no-wait'
+        ;;
         (--)
-            shift
-            break
-            ;;
+        shift
+        break
+        ;;
     esac
     shift
 done
