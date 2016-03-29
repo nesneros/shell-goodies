@@ -168,3 +168,6 @@ case "$OSTYPE" in
     (darwin*) alias o="open" ;;
     (linux-gnu) alias o="xdg-open &>/dev/null" ;;
 esac
+
+# Settings for the z compress/uncompress script
+export ZOPTS=-gz
