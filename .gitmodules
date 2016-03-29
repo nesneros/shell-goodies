@@ -13,3 +13,6 @@
 [submodule "thirdparty/k"]
 	path = thirdparty/k
 	url = git@github.com:supercrabtree/k.git
+[submodule "thirdparty/fasd"]
+	path = thirdparty/fasd
+	url = https://github.com/clvv/fasd.git
