@@ -78,3 +78,7 @@ else
 fi
 
 emacsclient --alternate-editor '' "${cmd[@]}" &>/dev/null
+
+if type xdotool >/dev/null; then
+    xdotool search --class 'emacs.' windowactivate
+fi
