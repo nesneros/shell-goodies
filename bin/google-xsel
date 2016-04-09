@@ -2,4 +2,8 @@
 set -e
 
 selection=$(xsel)
-[[ -n "$selection" ]] && xdg-open https://www.google.com/search?q=$selection
+if [[ -z "$selection" ]]; then
+    notify-send "No selection!!!"
+else
+    xdg-open "https://www.google.com/search?q=${selection}"
+fi
