@@ -52,7 +52,7 @@ if [[ -z "$JAVA_HOME" ]] && type update-alternatives >/dev/null ; then
 fi
 
 # Start gpg-agent if it is not running
-if type gpg-connect-agent >/dev/null && [ -z "GPG_TTY" ] ; then
+if type gpg-connect-agent >/dev/null && [ -z "$GPG_TTY" ] ; then
     gpg-connect-agent /bye
     GPG_TTY=$(tty)
     export GPG_TTY
