@@ -18,7 +18,7 @@
 (global-set-key "\C-cf"              'ffap)         ; find file at point
 (global-set-key "\C-x\C-b"           'ibuffer)   ; replaces std buffer list
 (global-set-key (kbd "C-c l")        'toggle-flycheck-errors-window)
-(global-set-key (kbd "s-w")          'delete-window)  ;; Cmd-W closes an  window, not the frame
+(global-set-key (kbd "C-S-w")        'delete-window)
 
 ;;; Customization placed in its own file. Create it if it doesn't exist
 (defconst custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -301,7 +301,9 @@
 (use-package projectile
   :ensure t
   :demand t
-  :bind-keymap ("s-p" . projectile-command-map)
+  ;; Used to be "s-p" but that isn't working with Grome
+  ;; See http://blog.n01se.net/blog-n01se-net-p-314.html
+  :bind-keymap ("s-[" . projectile-command-map)
   :config
   (setq projectile-tags-file-name ".tags")
   (projectile-global-mode))
@@ -309,7 +311,7 @@
 ;;; Project Explorer
 (use-package project-explorer
   :ensure t
-  :bind (:map projectile-command-map ("s-p" . project-explorer-toggle)))
+  :bind (:map projectile-command-map ("s-[" . project-explorer-toggle)))
 
 ;;; Rainbow Delimiters
 (use-package rainbow-delimiters
