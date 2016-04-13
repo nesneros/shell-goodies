@@ -33,7 +33,7 @@ function dm-select {
 
 _dm_complete() {
     declare -a machines_cmd
-    machines_cmd=($(docker-machine ls|tail +2|awk '{print $1":"$3"("$4")"}'))
+    machines_cmd=($(docker-machine ls|tail -n +2|awk '{print $1":"$3"("$4")"}'))
     _describe 'machines' machines_cmd
 }
 
