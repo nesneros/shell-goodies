@@ -19,16 +19,18 @@ alias+ grep --color=auto --directories=skip # Why would you ever want grep to tr
 ## ls
 if type dircolors >/dev/null; then
     eval "$(dircolors --sh)"
-    alias+ ls --color=auto --group-directories-first --human-readable
+    alias+ ls --color=auto
 fi
+alias+ ls --group-directories-first --human-readable
 alias ll='ls -l'
 alias la='ls -lA'
 
-alias -g L='|less'
-alias -g H='|head'
-alias -g T='|tail -100f'
+alias -g F='|less +F'
 alias -g G='|grep --ignore-case -E'
+alias -g H='|head'
+alias -g L='|less'
 alias -g S='|sort'
+alias -g T='|tail -100f'
 
 alias -g '^^'="*(.om[1])" # Newest file
 alias -g 'D^^'="~/Downloads/*(.om[1])" # Newest file
