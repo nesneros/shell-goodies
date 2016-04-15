@@ -83,9 +83,9 @@ function dm-updateEtcHosts {
     cat <(grep -v ".${suffix}$" /etc/hosts) <(docker-machine ls | sed  -n "s/\([^ ]*\).*tcp:\/\/\(.*\):.*/\2 \1.${suffix}/p" | sort) >! $tmpFile
     if ! command diff -q $tmpFile /etc/hosts > /dev/null ; then
         echo "Updating /etc/hosts"
-        sudo command mv /etc/hosts /etc/hosts.bak
-        sudo command chmod +r $tmpFile
-        sudo command cp $tmpFile /etc/hosts
+        sudo mv /etc/hosts /etc/hosts.bak
+        sudo chmod +r $tmpFile
+        sudo cp $tmpFile /etc/hosts
         grep ".${suffix}$" /etc/hosts
     fi
     command rm $tmpFile
