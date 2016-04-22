@@ -218,6 +218,13 @@
 ;;; git-modes - ignore, config, attributes
 (use-package gitignore-mode :ensure t)
 
+;;; groovy and gradle
+(use-package gradle-mode
+  :ensure t
+  :config
+  (setq gradle-use-gradlew t))
+(use-package groovy-mode :ensure t)
+
 ;;; Hippie expand
 (use-package hippie-exp
   :bind ("M-/" . hippie-expand) ; replace std Emacs expand key
