@@ -32,8 +32,6 @@ gitDir="$(git -C "$scriptDir" rev-parse --git-dir)"
 # In a root repo the git dir is .git, so take the parent as topLevelDir
 [[ -z "$topLevelDir" ]] && topLevelDir="$gitDir/.."
 
-echo JHS "$gitDir" > /dev/stderr
-
 tmpTagsFile="$topLevelDir/.tags.tmp$$"
 trap 'rm -f "$tmpTagsFile"' EXIT
 outputFile="$gitDir/ctags.out"
