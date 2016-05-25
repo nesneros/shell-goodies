@@ -171,6 +171,10 @@
   :config
   (dash-enable-font-lock))
 
+;;; Docker
+(use-package dockerfile-mode
+  :ensure t)
+
 ;;; Direx
 ;; (use-package direx
 ;;   :ensure t
@@ -375,6 +379,9 @@
   (setq wgrep-enable-key "w")
   (setq wgrep-auto-save-buffer t))
 
+;;; yaml
+(use-package yaml-mode
+  :ensure t)
 
 ;;; xml
 (require 'hideshow)
