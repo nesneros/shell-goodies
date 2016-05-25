@@ -27,7 +27,7 @@ gentags() {
 
 scriptDir=$(dirname "$0")
 topLevelDir=$(git rev-parse --show-toplevel)
-gitDir="$(git -C "$scriptDir" rev-parse --git-dir)"
+gitDir="$(git -C "$scriptDir" rev-parse --git-dir 2>/dev/null)"
 # scriptDir is within git dir. In submodule repo the above command works, in the root git repo it returns the empty string. Strange!?! (git version 2.7.2)
 # In a root repo the git dir is .git, so take the parent as topLevelDir
 [[ -z "$topLevelDir" ]] && topLevelDir="$gitDir/.."
