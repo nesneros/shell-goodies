@@ -1,4 +1,4 @@
-local expectedTemplateDir=$SHELL_GOODIES_ROOT/lib/git_template
+local expectedTemplateDir=${SHELL_GOODIES_ROOT/$HOME/\~}/lib/git_template
 local configuredTemplateDir=$(git config init.templateDir)
 
 if [[ "$expectedTemplateDir" != "$configuredTemplateDir" ]]; then
@@ -32,4 +32,3 @@ if [[ -n "$BREW_PREFIX" ]] && [[ "$BREW_PREFIX/bin/zsh" = "$SHELL" ]]; then
         ln -sf "$git_completion" "$HOME/.goodies/fpath/_dir"
     fi
 fi
-
