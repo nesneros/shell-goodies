@@ -3,3 +3,6 @@
 
 # Directory processed by .zshrc. Files should have extension .zsh
 #zstyle ':shell-goodies:init' dir ~/etc/zsh.d
+
+# Directory to store secrets
+# export GOODIES_SECRETS_DIR="$HOME/etc/my-secrets"
