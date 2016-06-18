@@ -38,6 +38,7 @@ goodies:source "${SHELL_GOODIES_ROOT}/thirdparty/zaw/zaw.zsh"
 ### zsh-syntax-highlighting
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
 goodies:source "${SHELL_GOODIES_ROOT}/thirdparty/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+ZSH_HIGHLIGHT_STYLES[globbing]='none'
 
 ### zsh-history-substring-search
 # This must be loaded after syntax highlighting
