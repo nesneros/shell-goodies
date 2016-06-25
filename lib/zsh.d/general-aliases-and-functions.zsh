@@ -32,6 +32,8 @@ alias -g L='|less'
 alias -g S='|sort'
 alias -g T='|tail -100f'
 
+alias -g paux='ps aux | grep'
+
 alias -g '^^'="*(.om[1])" # Newest file
 alias -g 'D^^'="~/Downloads/*(.om[1])" # Newest file
 
