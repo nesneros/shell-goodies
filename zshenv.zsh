@@ -26,7 +26,7 @@ goodies:prezto_source() {
 export SHELL_GOODIES_ROOT=${${(%):-%N}:A:h} # $0 doesn't work because it is a starup file for zsh
 goodies:log "SHELL_GOODIES_ROOT=$SHELL_GOODIES_ROOT"
 
-path=("$HOME/bin"(N) "$SHELL_GOODIES_ROOT/bin" $path /usr/local/{bin,sbin}(N))
+path=("$HOME/bin/$(hostname)"(N) "$HOME/bin"(N) "$SHELL_GOODIES_ROOT/bin" $path /usr/local/{bin,sbin}(N))
 
 # Make sure BREW_PREFIX is defined before prezto. Prezto sources ~/.zprofiles which used BREW_PREFIX
 if [[ "$OSTYPE" = "darwin"* ]]; then
