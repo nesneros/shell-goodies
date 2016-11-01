@@ -1,0 +1,30 @@
+#! /bin/sh
+# 
+# Will open an editor on stdin, and when save write it to stdout.
+#
+
+temp=$(mktemp)
+trap 'rm -f "$temp"; exit' 0 1 2 3 14
+
+cat > "$temp" 
+
+#
+# change input to the keyboard for the edit
+#
+exec </dev/tty
+
+#
+# hold a copy of stdout for later listing;
+# output should go specifically to the screen,
+# to stay out of any pipelines during the edit;
+#
+exec 3>&1
+exec >/dev/tty
+${EDITOR:-$VISUAL} "$temp"
+status="$?"
+cat "$temp" >&3
+
+exec 3>&-
+exec >&-
+
+exit $status
