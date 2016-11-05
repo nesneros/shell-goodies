@@ -25,10 +25,10 @@ if zstyle -m ':shell-goodies:dvcs:git' clonedir '*'; then
     alias -s git=_git_clone
 fi
 
-                            if [[ -n "$BREW_PREFIX" ]] && [[ "$BREW_PREFIX/bin/zsh" = "$SHELL" ]]; then
-                                # Use git completion from system zsh.
-                                local git_completion=$(echo /usr/share/zsh/[[:digit:]].*/functions/_git(N[-1]))
-                                if [[ -f "$git_completion" ]] ; then
-                                    ln -sf "$git_completion" "$HOME/.goodies/fpath/_dir"
-                                fi
-                            fi
+if [[ -n "$BREW_PREFIX" ]] && [[ "$BREW_PREFIX/bin/zsh" = "$SHELL" ]]; then
+    # Use git completion from system zsh.
+    local git_completion=$(echo /usr/share/zsh/[[:digit:]].*/functions/_git(N[-1]))
+    if [[ -f "$git_completion" ]] ; then
+        ln -sf "$git_completion" "$HOME/.goodies/fpath/_dir"
+    fi
+fi
