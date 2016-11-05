@@ -1,6 +1,17 @@
 #! /usr/bin/env zsh
 set -e
 
+ask() {
+    # If stdin is a tty, we are "interactive".
+    # non-interactive shell: wait for a linefeed
+    #     interactive shell: continue after a single keypress
+    read_n=$([ -t 0 ] && echo "-n 1")
+
+    local reply=
+    vared -p "$1 ([y]/n) " reply
+    [[ ! $reply =~ ^[Nn]$ ]]
+}
+
 local dir="${0:h:A}"
 local goodiesDir="$HOME/.goodies"
 local emacsDir="$HOME/.emacs.d"
@@ -88,9 +99,16 @@ doInstall() {
         done
     fi
 
-    echo "*** Installing/updating Emacs packages"
-    emacs -batch -user "$USER" -f package-utils-upgrade-all -kill
-    echo "*** Done with Emacs"
+    echo
+    if ask "Install (or update) Emacs packages?" ; then
+        echo "*** Installing/updating Emacs packages"
+        emacs -batch -user "$USER" -f package-utils-upgrade-all -kill
+        echo "*** Done with Emacs"
+    fi
+
+    echo
+    echo "*** Downloading FZF binary"
+    "$dir/thirdparty/fzf/install" --bin
 }
 
 if [[ "$1" = 'doIt' ]]; then
@@ -100,6 +118,10 @@ else
 The command will install the Shell Goodies. More precise
 it will symlink zsh startup files from $HOME to Shell Goodies files.
 
-Type '${0} doIt' to perform the installation.
+Execute '${0} doIt' to perform the installation.
 EOF
+    echo
+    if ask "Do you want to execute the installation now?" ; then
+        doInstall  
+    fi
 fi
