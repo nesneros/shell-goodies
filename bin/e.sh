@@ -73,7 +73,9 @@ else
     if [[ -z "$hasFrame" ]]; then
         hasFrame=$(emacsclient --alternate-editor '' --eval "(member $frame (mapcar 'framep (frame-list)))" 2>/dev/null) ||:
     fi
-    [[ -z "$hasFrame" || "$hasFrame" = 'nil' ]] && cmd=(--create-frame ${cmd[@]})
+    if [[ -z "$hasFrame" || "$hasFrame" = 'nil' ]]; then
+        emacsclient --alternate-editor "" --no-wait --create-frame
+    fi
     cmd=($noWait "${cmd[@]}")
 fi
 
