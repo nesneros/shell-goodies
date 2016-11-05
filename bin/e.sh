@@ -32,12 +32,12 @@ while [[ "$1" = -* ]] ; do
             noDefaultArg=t
             ;;
         (--no-wait)
-        noWait='--no-wait'
-        ;;
+            noWait='--no-wait'
+            ;;
         (--)
-        shift
-        break
-        ;;
+            shift
+            break
+            ;;
     esac
     shift
 done
