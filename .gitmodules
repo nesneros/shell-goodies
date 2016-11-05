@@ -16,3 +16,9 @@
 [submodule "thirdparty/fasd"]
 	path = thirdparty/fasd
 	url = https://github.com/clvv/fasd.git
+[submodule "fzf"]
+	path = fzf
+	url = https://github.com/junegunn/fzf.git
+[submodule "thirdparty/fzf"]
+	path = thirdparty/fzf
+	url = https://github.com/junegunn/fzf.git
