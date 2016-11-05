@@ -111,17 +111,12 @@ doInstall() {
     "$dir/thirdparty/fzf/install" --bin
 }
 
-if [[ "$1" = 'doIt' ]]; then
-    doInstall
-else
-    cat <<EOF
+
+cat <<EOF
 The command will install the Shell Goodies. More precise
 it will symlink zsh startup files from $HOME to Shell Goodies files.
-
-Execute '${0} doIt' to perform the installation.
 EOF
-    echo
-    if ask "Do you want to execute the installation now?" ; then
-        doInstall  
-    fi
+echo
+if ask "Do you want to execute the installation now?" ; then
+    doInstall  
 fi
