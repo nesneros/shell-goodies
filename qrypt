@@ -1,0 +1,14 @@
+#! /usr/bin/env zsh
+set -e
+
+if [ -z "${GOODIES_QRYPT_DIR}" ] ; then
+    echo "\$GOODIES_QRYPT_DIR is not set"
+    exit 1
+fi
+cd "${GOODIES_QRYPT_DIR}"
+
+file=$(eval ls -1 --reverse "*$1*.pdf.{asc,gpg}(N)" | fzf -1 -d'[^.]+' --with-nth=1)
+tmpFile="$(mktemp)"
+gpg --batch --quiet --output - < "$file" > "$tmpFile"
+( sleep 1 ; rm "$tmpFile" ) &
+[[ -n "$file" ]] && timeout --foreground 300 evince 2>/dev/null $tmpFile
