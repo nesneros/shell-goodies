@@ -44,9 +44,12 @@ alias h='history -f 1 | less +G'
 alias+ du -h
 alias+ df -h
 
-alias -s .gz=z
-alias -s .zip=z
-alias -s .Z=z
+alias -s gz=z
+alias -s zip=z
+alias -s Z=z
+
+alias -s md=less
+alias -s txt=less
 
 alias openports="lsof -n -P -i4TCP|grep LISTEN"
 
