@@ -101,3 +101,32 @@ function m {
     shift
     docker-machine "$cmd" $DOCKER_MACHINE_NAME "$@"
 }
+
+# gloud - this must be done before k8s
+if [[ -d /usr/share/google-cloud-sdk ]]; then
+    source /usr/share/google-cloud-sdk/completion.zsh.inc
+fi
+
+# Kubernetes
+if type kubectl > /dev/null ; then
+    alias kc=kubectl
+    source <(kubectl completion zsh)
+    compdef kc=kubectl 2>/dev/null || true
+fi
+
+# Minikube
+if type minikube > /dev/null ; then
+    function use-minikube {
+        local shinit=$(minikube docker-env 2>&1)
+        if echo $shinit | grep -q "Host is not running" ; then
+            minikube start
+            eval $(minikube docker-env)
+            rc=$?
+        else
+            eval $shinit
+        fi
+        export DOCKER_MACHINE_NAME='*kube*'
+        minikube ip
+        return $rc 
+    }
+fi
