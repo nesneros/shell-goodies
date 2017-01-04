@@ -76,16 +76,25 @@ function dkr {
     esac
 }
 
+function _newEtcHosts {
+    local tmpFile="$1"
+    if ! command diff -q "$tmpFile" /etc/hosts > /dev/null ; then
+        echo "Updating /etc/hosts"
+        sudo mv /etc/hosts /etc/hosts.bak
+        sudo chmod +r "$tmpFile"
+        sudo cp "$tmpFile" /etc/hosts
+        return 0
+    else
+        return 1
+    fi    
+}
+
 function dm-updateEtcHosts {
     local tmpFile=$(mktemp ${TMPDIR:-/tmp}/dm-hosts.XXXXXXXXXX)
     local suffix='machine'
     # Generate new /etc/hosts by cat the old one without .machine entries, and generate entries for all machines
     cat <(grep -v ".${suffix}$" /etc/hosts) <(docker-machine ls | sed  -n "s/\([^ ]*\).*tcp:\/\/\(.*\):.*/\2 \1.${suffix}/p" | sort) >! $tmpFile
-    if ! command diff -q $tmpFile /etc/hosts > /dev/null ; then
-        echo "Updating /etc/hosts"
-        sudo mv /etc/hosts /etc/hosts.bak
-        sudo chmod +r $tmpFile
-        sudo cp $tmpFile /etc/hosts
+    if _newEtcHosts $tmpFile ; then
         grep ".${suffix}$" /etc/hosts
     fi
     command rm $tmpFile
