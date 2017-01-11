@@ -111,15 +111,20 @@ function m {
     docker-machine "$cmd" $DOCKER_MACHINE_NAME "$@"
 }
 
-# gloud - this must be done before k8s
-if [[ -d /usr/share/google-cloud-sdk ]]; then
-    source /usr/share/google-cloud-sdk/completion.zsh.inc
+# gloud - this must be done before k8s. kubectl can be install via gcloud
+if [[ -d $GOODIES_GCLOUD_INSTALL_DIR ]]; then
+    if [ -f $GOODIES_GCLOUD_INSTALL_DIR/path.zsh.inc ]; then
+        source '/home/jan/opt/google-cloud-sdk/path.zsh.inc'
+    fi
+    if [ -f $GOODIES_GCLOUD_INSTALL_DIR/completion.zsh.inc ]; then
+        source '/home/jan/opt/google-cloud-sdk/completion.zsh.inc'
+    fi
 fi
 
 # Kubernetes
 if type kubectl > /dev/null ; then
-    alias kc=kubectl
     source <(kubectl completion zsh)
+    alias kc=kubectl
     compdef kc=kubectl 2>/dev/null || true
 fi
 
@@ -135,7 +140,12 @@ if type minikube > /dev/null ; then
             eval $shinit
         fi
         export DOCKER_MACHINE_NAME='*kube*'
-        minikube ip
+
+        if type kubectl > /dev/null ; then
+            kubectl config use-context minikube
+        fi
+        local ip=$(minikube ip)
+        echo "Dashboard: http://$ip:30000/"
         return $rc 
     }
 fi
