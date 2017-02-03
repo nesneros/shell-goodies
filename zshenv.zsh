@@ -53,7 +53,18 @@ fi
 
 # Start gpg-agent if it is not running
 if type gpg-connect-agent >/dev/null && [ -z "$GPG_TTY" ] ; then
-    gpg-connect-agent /bye
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        if type gpg-agent >/dev/null && [ -z "$GPG_AGENT_INFO" ] ; then
+            [ -f ~/.goodies/gpg-agent-info ] && source ~/.goodies/gpg-agent-info
+            if [ -S "${GPG_AGENT_INFO%%:*}" ]; then
+                export GPG_AGENT_INFO
+            else
+                eval $( gpg-agent --daemon --write-env-file ~/.goodies/gpg-agent-info )
+            fi
+        fi
+    else
+        gpg-connect-agent /bye
+    fi
     GPG_TTY=$(tty)
     export GPG_TTY
 fi

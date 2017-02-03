@@ -71,7 +71,7 @@ else
         (*)         frame="'unknown" ;;
     esac
     if [[ -z "$hasFrame" ]]; then
-        hasFrame=$(emacsclient --alternate-editor '' --eval "(member $frame (mapcar 'framep (frame-list)))" 2>/dev/null) ||:
+        hasFrame=$(emacsclient --alternate-editor '' --eval "(member $frame (mapcar 'framep (frame-lxsist)))" 2>/dev/null) ||:
     fi
     if [[ -z "$hasFrame" || "$hasFrame" = 'nil' ]]; then
         emacsclient --alternate-editor "" --no-wait --create-frame
@@ -81,6 +81,6 @@ fi
 
 emacsclient --alternate-editor '' "${cmd[@]}" &>/dev/null
 
-if type xdotool >/dev/null; then
+if type xdotool >/dev/null 2>&1; then
     xdotool search --class 'emacs.' windowactivate
 fi
