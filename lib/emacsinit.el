@@ -227,7 +227,7 @@
   :ensure t
   :config
   (setq gradle-use-gradlew t))
-(use-package groovy-mode :ensure t)
+;;(use-package groovy-mode :ensure t)
 
 ;;; Hippie expand
 (use-package hippie-exp
