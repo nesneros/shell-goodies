@@ -3,7 +3,7 @@ local configuredTemplateDir=$(git config init.templateDir)
 
 if [[ "$expectedTemplateDir" != "$configuredTemplateDir" ]]; then
     if [[ -z "$configuredTemplateDir" ]]; then
-        echo "You have non Git template dir configured."
+        echo "You have no Git template dir configured."
     else
         echo "The Goodie git template dir is: $expectedTemplateDir"
         echo "You have configured:            $configuredTemplateDir"
