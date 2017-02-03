@@ -10,5 +10,11 @@ cd "${GOODIES_QRYPT_DIR}"
 file=$(eval ls -1 --reverse "*$1*.pdf.{asc,gpg}(N)" | fzf -1 -d'[^.]+' --with-nth=1)
 tmpFile="$(mktemp)"
 gpg --batch --quiet --output - < "$file" > "$tmpFile"
+mv "$tmpFile" "${tmpFile}.pdf"
+tmpFile="${tmpFile}.pdf"
 ( sleep 1 ; rm "$tmpFile" ) &
-[[ -n "$file" ]] && timeout --foreground 300 evince 2>/dev/null $tmpFile
+if [[ "$OSTYPE" == "darwin"* ]] ; then
+    [[ -n "$file" ]] && timeout --foreground 300 open 2>/dev/null $tmpFile    
+else
+    [[ -n "$file" ]] && timeout --foreground 300 evince 2>/dev/null $tmpFile
+fi
