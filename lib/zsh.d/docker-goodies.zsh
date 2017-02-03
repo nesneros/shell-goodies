@@ -126,6 +126,10 @@ if type kubectl > /dev/null ; then
     source <(kubectl completion zsh)
     alias kc=kubectl
     compdef kc=kubectl 2>/dev/null || true
+    # Workaround for https://github.com/kubernetes/kubernetes/issues/27538
+    complete -o nospace -o default -F _python_argcomplete "gcloud"
+    complete -o default -F _bq_completer bq
+    complete -o nospace -F _python_argcomplete gsutil
 fi
 
 # Minikube
