@@ -114,10 +114,10 @@ function m {
 # gloud - this must be done before k8s. kubectl can be install via gcloud
 if [[ -d $GOODIES_GCLOUD_INSTALL_DIR ]]; then
     if [ -f $GOODIES_GCLOUD_INSTALL_DIR/path.zsh.inc ]; then
-        source '/home/jan/opt/google-cloud-sdk/path.zsh.inc'
+        source $GOODIES_GCLOUD_INSTALL_DIR/path.zsh.inc
     fi
     if [ -f $GOODIES_GCLOUD_INSTALL_DIR/completion.zsh.inc ]; then
-        source '/home/jan/opt/google-cloud-sdk/completion.zsh.inc'
+        source $GOODIES_GCLOUD_INSTALL_DIR/completion.zsh.inc
     fi
 fi
 
