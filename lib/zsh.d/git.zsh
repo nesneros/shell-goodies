@@ -1,6 +1,8 @@
 local expectedTemplateDir=${SHELL_GOODIES_ROOT}/lib/git_template
 local configuredTemplateDir=$(git config init.templateDir)
 
+configuredTemplateDir=$(echo ${configuredTemplateDir/\~/$HOME})
+
 if [[ "$expectedTemplateDir" != "$configuredTemplateDir" ]]; then
     if [[ -z "$configuredTemplateDir" ]]; then
         echo "You have no Git template dir configured."
