@@ -9,6 +9,11 @@ goodies:log() {
 
 goodies:log "BEGIN: zshenv.zsh"
 
+# Define TMPDIR. We want all shells to have same TMPDIR
+export TMPDIR=/tmp/tmp.$USER
+mkdir -p $TMPDIR
+chmod 700 $TMPDIR
+
 goodies:source() {
     local start=$SECONDS
     source "$1"
