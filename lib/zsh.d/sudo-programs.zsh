@@ -1,5 +1,16 @@
-for p in apt aptitude snap systemctl; do
-    if type "$p" >/dev/null ; then
-        alias "$p"="sudo $p"
+function _makesudo {
+    if type "$1" >/dev/null ; then
+        alias "$1"="sudo $1"
     fi
-done
+}
+
+case "$OSTYPE" in
+    (linux*)
+        for p in apt aptitude snap systemctl; do
+            _makesudo $p
+        done
+        ;;
+    (darvin*)
+        ;;
+    (*)
+esac
