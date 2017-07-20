@@ -7,7 +7,14 @@ if [ -z "${GOODIES_QRYPT_DIR}" ] ; then
 fi
 cd "${GOODIES_QRYPT_DIR}"
 
-file=$(eval ls -1 --reverse "*$1*.pdf.{asc,gpg}(N)" | fzf -1 -d'[^.]+' --with-nth=1)
+query="$1"
+if [ "$query" = '-1' ]; then
+    query="$2"
+    file=$(eval ls -1 --reverse "*$query*.pdf.{asc,gpg}(N)" | head -n 1)
+else    
+    file=$(eval ls -1 --reverse "*$query*.pdf.{asc,gpg}(N)" | fzf -1 -d'[^.]+' --with-nth=1)
+fi
+    
 tmpFile="$(mktemp)"
 gpg --batch --quiet --output - < "$file" > "$tmpFile"
 mv "$tmpFile" "${tmpFile}.pdf"
