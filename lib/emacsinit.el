@@ -383,6 +383,9 @@
 (use-package yaml-mode
   :ensure t)
 
+(use-package epa-file
+  (epa-file-enable))
+
 ;;; xml
 (require 'hideshow)
 (require 'sgml-mode)
