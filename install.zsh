@@ -69,6 +69,9 @@ _link() {
 }
 
 doInstall() {
+    if [ "$createInitFile" = t ] ; then
+        createInitFile
+    fi
     git config --global init.templatedir "$dir/lib/git_template"
     mkdir -p "$goodiesDir/fpath"
     local -A files
