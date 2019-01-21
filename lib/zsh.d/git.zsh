@@ -3,17 +3,17 @@ local configuredTemplateDir=$(git config init.templateDir)
 
 configuredTemplateDir=$(echo ${configuredTemplateDir/\~/$HOME})
 
-if [[ "$expectedTemplateDir" != "$configuredTemplateDir" ]]; then
-    if [[ -z "$configuredTemplateDir" ]]; then
-        echo "You have no Git template dir configured."
-    else
-        echo "The Goodie git template dir is: $expectedTemplateDir"
-        echo "You have configured:            $configuredTemplateDir"
-    fi
-    echo
-    echo "Consider executing:"
-    echo "   git config --global init.templatedir $expectedTemplateDir"
-fi
+#if [[ "$expectedTemplateDir" != "$configuredTemplateDir" ]]; then
+#    if [[ -z "$configuredTemplateDir" ]]; then
+#        echo "You have no Git template dir configured."
+#    else
+#        echo "The Goodie git template dir is: $expectedTemplateDir"
+#        echo "You have configured:            $configuredTemplateDir"
+#    fi
+#    echo
+#    echo "Consider executing:"
+#    echo "   git config --global init.templatedir $expectedTemplateDir"
+#fi
 if zstyle -m ':shell-goodies:dvcs:git' clonedir '*'; then
     function _git_clone {
         local url="$1"
