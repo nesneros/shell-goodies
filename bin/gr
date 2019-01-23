@@ -34,5 +34,9 @@ done
 
 [ -z "$buildDir" ] || cd $buildDir
 echo "Build dir: $(pwd)"
-exec "$d/gradlew" $debugflag "$@"
+if [ -f "$d/.javahome" ] ; then
+    JAVA_HOME=$(cat "$d/.javahome") exec "$d/gradlew" $debugflag "$@"
+else 
+    exec "$d/gradlew" $debugflag "$@"
+fi
 
